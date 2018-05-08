@@ -1,0 +1,8 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+dependencies {
+    api libraries.domicApi
+    implementation libraries.rxRelay
+    implementation libraries.domicUtil
+}

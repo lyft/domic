@@ -1,0 +1,57 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        applicationId 'com.lyf.android.maketheworldabetterplace'
+        compileSdkVersion versions.compileSdk
+        targetSdkVersion versions.targetSdk
+        minSdkVersion versions.minSdk
+        versionCode 1
+        versionName '0.0.1'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+// See '../dependencies.gradle'.
+dependencies {
+    implementation libraries.kotlinStdlib
+    implementation libraries.supportAppCompat
+    implementation libraries.supportRecyclerView
+    implementation libraries.supportConstraintLayout
+
+    implementation libraries.rxJava
+    implementation libraries.rxAndroid
+    implementation libraries.rxKotlin
+    implementation libraries.rxReplayingShareKotlin
+    implementation libraries.koptionalRxJava2
+    implementation libraries.domicApi
+    implementation libraries.domicAndroid
+}
+
+dependencies {
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.kotlinMockito
+    testImplementation libraries.domicTest
+    testImplementation libraries.rxRelay
+}
+
+configurations.all {
+    resolutionStrategy.force libraries.supportAnnotations
+    resolutionStrategy.force libraries.kotlinStdlib
+}
