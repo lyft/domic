@@ -189,9 +189,7 @@ This allows to minimize workload on main thread thus giving it more time for ren
 
 Domic takes care of computing diff between previous state and new one thus only rendering what is different.
 
-It's important to say that Android Framework already diffs *some* state changes, typically, simple ones, like [`TextView.setEnabled()`](http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/widget/TextView.java#2168).
-However there are relatively expensive state changes like [`TextView.setText()`](http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/widget/TextView.java#5255) that are not diffed by Android Framework. 
-Domic takes care of both.
+Motivation: Android Framework already diffs *some* state changes, typically, simple ones, like [`TextView.setEnabled()`](http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/widget/TextView.java#2168). However there are relatively expensive state changes like [`TextView.setText()`](http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/widget/TextView.java#5255) that are not diffed by Android Framework and can require re-rendering, computations, notifying listener(s) and so on.
 
 *Tip*:
 
