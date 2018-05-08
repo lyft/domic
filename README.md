@@ -10,7 +10,7 @@ It allows you:
 - Enforce async-only interaction with UI layer across codebase
 - Reuse existing Android DOM: Views, Widgets, Layouts
 
->Domic — [DOM][dom]e like.
+>Domic — [DOM][dom] like.
 
 ## Table of contents
 
