@@ -22,3 +22,9 @@ dependencies {
     implementation libraries.domicUtil
 }
 
+dependencies {
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.kotlinMockito
+}
+

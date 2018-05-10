@@ -1,16 +1,22 @@
 package com.lyft.domic.android
 
 import com.lyft.domic.api.EditText
+import com.lyft.domic.api.Renderer
 import com.lyft.domic.api.TextView
+import com.lyft.domic.api.subscribe
 import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import java.util.concurrent.atomic.AtomicReferenceArray
 
-class AndroidEditText(private val realEditText: android.widget.EditText) : EditText {
+class AndroidEditText(
+        private val realEditText: android.widget.EditText,
+        private val renderer: Renderer
+) : EditText {
 
-    private val asTextView: TextView = AndroidTextView(realEditText)
+    private val asTextView: TextView = AndroidTextView(realEditText, renderer)
 
     override val observe: EditText.Observe = object : EditText.Observe, TextView.Observe by asTextView.observe {
 
@@ -23,8 +29,8 @@ class AndroidEditText(private val realEditText: android.widget.EditText) : EditT
         override fun selection(selectionValues: Observable<Int>): Disposable {
             return selectionValues
                     .distinctUntilChanged(state, 0)
-                    .observeOn(mainThread())
-                    .subscribe { realEditText.setSelection(it) }
+                    .map { Action { realEditText.setSelection(it) } }
+                    .subscribe(renderer::render)
         }
     }
 }
