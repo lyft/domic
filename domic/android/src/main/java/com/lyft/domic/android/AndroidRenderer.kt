@@ -64,6 +64,7 @@ class AndroidRenderer(
     override fun render(actions: Observable<Action>): Disposable {
         val streamId = streamIdGenerator.incrementAndGet()
 
+        // TODO? We can switchMap here to reduce property updates that happen during buffer time window.
         val disposable = actions.subscribe { action ->
             val actionw = Actionw(streamId, action)
 
