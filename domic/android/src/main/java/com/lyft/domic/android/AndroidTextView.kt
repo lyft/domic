@@ -1,18 +1,24 @@
 package com.lyft.domic.android
 
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.lyft.domic.api.Renderer
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.View
+import com.lyft.domic.api.subscribe
 import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.Action
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.atomic.AtomicReferenceArray
 
-class AndroidTextView(private val realTextView: android.widget.TextView) : TextView {
+class AndroidTextView(
+        private val realTextView: android.widget.TextView,
+        private val renderer: Renderer
+) : TextView {
 
-    private val asView: View = AndroidView(realTextView)
+    private val asView: View = AndroidView(realTextView, renderer)
 
     override val observe: TextView.Observe = object : TextView.Observe, View.Observe by asView.observe {
 
@@ -38,7 +44,7 @@ class AndroidTextView(private val realTextView: android.widget.TextView) : TextV
 
         override fun text(textValues: Observable<out CharSequence>): Disposable = textValues
                 .distinctUntilChanged(state, 0)
-                .observeOn(mainThread())
-                .subscribe { realTextView.text = it }
+                .map { Action { realTextView.text = it } }
+                .subscribe(renderer::render)
     }
 }

@@ -2,6 +2,7 @@ package com.lyft.domic.sampleapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import com.lyft.domic.android.AndroidRenderer
 import com.lyft.domic.sampleapp.signin.RealSignInService
 import com.lyft.domic.sampleapp.signin.RealSignInView
 import com.lyft.domic.sampleapp.signin.SignInViewController
@@ -18,7 +19,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val view = RealSignInView(findViewById(android.R.id.content))
+        val view = RealSignInView(findViewById(android.R.id.content), AndroidRenderer.getInstance())
 
         disposable += Single
                 .fromCallable { SignInViewController(view, RealSignInService()) }
