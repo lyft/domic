@@ -2,76 +2,64 @@ package com.lyft.domic.android.rendering
 
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.withLock
 
 internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
 
     private val lock: ReadWriteLock = ReentrantReadWriteLock()
-    private val bufferPool: MutableList<MutableCollection<T>> = ArrayList(3)
+    private val bufferPool = ArrayList<MutableCollection<T>>(3)
     private var currentBuffer: MutableCollection<T> = obtainBuffer()
 
     override fun addOrReplace(item: T) {
-        lock.writeLock().apply {
-            lock()
+        lock.writeLock().withLock {
             currentBuffer.remove(item)
             currentBuffer.add(item)
-            unlock()
         }
     }
 
     override fun isEmpty(): Boolean {
-        return lock.readLock().run {
-            lock()
+        return lock.readLock().withLock {
             val result = currentBuffer.isEmpty()
-            unlock()
             result
         }
     }
 
     override fun swapAndGet(): Collection<T> {
-        return lock.writeLock().run {
-            lock()
+        return lock.writeLock().withLock {
             val snapshot = currentBuffer
             currentBuffer = obtainBuffer()
 
-            unlock()
             snapshot
         }
     }
 
     override fun remove(item: T) {
-        lock.writeLock().apply {
-            lock()
+        lock.writeLock().withLock {
             currentBuffer.remove(item)
-            unlock()
         }
     }
 
     override fun recycle(buffer: Collection<T>) {
-        lock.writeLock().apply {
-            lock()
+        lock.writeLock().withLock {
             buffer as MutableCollection<T>
             buffer.clear()
             bufferPool.add(buffer)
-            unlock()
         }
     }
 
     private fun obtainBuffer(): MutableCollection<T> {
-        return lock.writeLock().run {
-            lock()
-
-            val result = if (bufferPool.isEmpty()) {
+        return lock.writeLock().withLock {
+            if (bufferPool.isEmpty()) {
                 ArrayList(20)
             } else {
+                // Poll last item to avoid array copy inside ArrayList.
+                val index = bufferPool.size - 1
 
-                val bp = bufferPool[0]
-                bufferPool.removeAt(0)
+                val bp = bufferPool[index]
+                bufferPool.removeAt(index)
+
                 bp
             }
-
-            unlock()
-
-            result
         }
     }
 }

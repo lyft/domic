@@ -7,7 +7,7 @@ import io.reactivex.Observable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class AndroidRendererTest {
 

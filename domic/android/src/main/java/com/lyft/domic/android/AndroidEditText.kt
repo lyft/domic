@@ -1,8 +1,8 @@
 package com.lyft.domic.android
 
 import com.lyft.domic.api.EditText
-import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.TextView
+import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
 import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
