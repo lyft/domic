@@ -9,31 +9,33 @@ import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit.*
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.ArrayList
 
 class AndroidRenderer(
-        private val choreographer: Choreographer,
-        timeScheduler: Scheduler,
-        bufferTimeWindowMs: Long
+        private val choreographer: Choreographer = Choreographer.getInstance(),
+        timeScheduler: Scheduler = Schedulers.computation(),
+        bufferTimeWindowMs: Long = 8, // We'll adjust if needed.
+        private val buffer: RenderingBuffer<Action> = RenderingBufferImpl()
 ) : Renderer {
 
     companion object {
-        private val INSTANCE by lazy {
-            AndroidRenderer(Choreographer.getInstance(), Schedulers.computation(), 8)
-        }
+        private val EMPTY_ACTION = Action { }
+        private val INSTANCE by lazy { AndroidRenderer() }
 
         fun getInstance(): AndroidRenderer = INSTANCE
     }
 
-    // TODO make a pool of objects similar to Message.obtain() to reduce allocations.
-    private data class Actionw(
-            val streamId: Int,
-            val action: Action
-    )
+    // TODO make a pool of objects similar to Message.obtain() to reduce allocations?
+    internal class Actionw(private val streamId: Int, private val source: Action) : Action {
 
-    // Guarded by itself.
-    // TODO implement buffer swapping to avoid allocation and reduce synchronization time.
-    private val buffer: MutableList<Actionw> = ArrayList(20)
+        override fun run() = source.run()
+
+        override fun equals(other: Any?): Boolean =
+                other === this
+                        ||
+                        (other?.hashCode() == streamId && other is Actionw)
+
+        override fun hashCode() = streamId
+    }
 
     private val streamIdGenerator = AtomicInteger()
 
@@ -41,52 +43,40 @@ class AndroidRenderer(
 
     init {
         disposable = Observable
-                .interval(0, bufferTimeWindowMs, MILLISECONDS, timeScheduler) // We'll adjust if needed.
-                .filter { buffer.size != 0 }
-                .map {
-                    // Reading `buffer.size` is ok, might not match end size due to concurrent modification.
-                    val copy: MutableList<Actionw> = ArrayList(buffer.size)
-
-                    synchronized(buffer) {
-                        copy.addAll(buffer)
-                        buffer.clear()
-                    }
-
-                    copy
-                }
+                .interval(0, bufferTimeWindowMs, MILLISECONDS, timeScheduler)
+                .filter { buffer.isEmpty() == false }
+                .map { buffer.swapAndGetSnapshot() }
                 .subscribe { actions ->
-                    choreographer.postFrameCallback {
-                        actions.forEach { actionw -> actionw.action.run() }
-                    }
+                    choreographer.postFrameCallback { actions.forEach { it.run() } }
                 }
     }
 
     override fun render(actions: Observable<Action>): Disposable {
         val streamId = streamIdGenerator.incrementAndGet()
 
-        // TODO? We can switchMap here to reduce property updates that happen during buffer time window.
         val disposable = actions.subscribe { action ->
-            val actionw = Actionw(streamId, action)
-
-            synchronized(buffer) {
-                buffer.add(actionw)
-            }
+            buffer.addOrReplace(Actionw(streamId, action))
         }
 
-        return ActionStreamDisposable(streamId, disposable)
+        return ActionStreamDisposable(
+                Actionw(
+                        streamId,
+
+                        /** We don't need to maintain reference to actual action because equals will check streamId. */
+                        EMPTY_ACTION
+                ),
+                disposable
+        )
     }
 
     override fun shutdown() = disposable.dispose()
 
-    private inner class ActionStreamDisposable(val streamId: Int, val source: Disposable) : Disposable {
+    private inner class ActionStreamDisposable(val actionw: Actionw, val source: Disposable) : Disposable {
         override fun isDisposed() = source.isDisposed
 
         override fun dispose() {
+            buffer.remove(actionw)
             source.dispose()
-
-            synchronized(buffer) {
-                buffer.removeAll { it.streamId == this.streamId }
-            }
         }
     }
 }
