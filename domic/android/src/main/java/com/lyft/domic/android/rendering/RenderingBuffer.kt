@@ -1,4 +1,4 @@
-package com.lyft.domic.android
+package com.lyft.domic.android.rendering
 
 /**
  * Rendering buffer, all methods must be thread-safe.
@@ -9,6 +9,8 @@ interface RenderingBuffer<T> {
 
     /**
      * Adds or replaces an item in *current* underlying buffer. Relies on item's [equals].
+     *
+     * In case of replacement item should be added to the tail of the buffer.
      */
     fun addOrReplace(item: T)
 
@@ -19,20 +21,27 @@ interface RenderingBuffer<T> {
 
     /**
      * Atomically swaps *current* underlying buffer with another.
-     * Subsequent calls will work against another buffer until it's swapped back.
+     * Subsequent reads and writes on this [RenderingBuffer] will work against another buffer until it's swapped.
+     * "Another" buffer is guaranteed to be empty.
      *
      * - Returned buffer must not be modified.
-     * - Returned buffer is safe to read if you can guarantee that [swapAndGetSnapshot]
+     * - Returned buffer is safe to read if you can guarantee that [swapAndGet]
      * won't be called during read.
+     * - Returned buffer should be recycled after use via [recycle].
      *
      * See [Double Buffering in Computer Graphics](https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics).
      *
      * @return read-only view to *current* underlying buffer.
      */
-    fun swapAndGetSnapshot(): Collection<T>
+    fun swapAndGet(): Collection<T>
 
     /**
      * Removes item from *current* underlying buffer. Relies on item's [equals].
      */
     fun remove(item: T)
+
+    /**
+     * Recycles used buffer into internal pool, it's illegal to use buffer after recycling.
+     */
+    fun recycle(buffer: Collection<T>)
 }

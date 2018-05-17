@@ -1,7 +1,7 @@
 package com.lyft.domic.android
 
 import com.lyft.domic.api.Button
-import com.lyft.domic.api.Renderer
+import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.TextView
 
 class AndroidButton(

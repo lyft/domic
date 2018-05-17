@@ -1,7 +1,7 @@
-package com.lyft.domic.android
+package com.lyft.domic.android.rendering
 
 import android.view.Choreographer
-import com.lyft.domic.api.Renderer
+import com.lyft.domic.api.rendering.Renderer
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import io.reactivex.functions.Action
@@ -97,7 +97,7 @@ class AndroidRendererTest {
 
     @Test
     fun actionsAreNotExecutedWithoutChoreographerCallback() {
-        renderer.render(Observable.fromIterable(actions))
+        actions.forEach { action -> renderer.render(Observable.just(action)) }
 
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 

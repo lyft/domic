@@ -1,14 +1,13 @@
-package com.lyft.domic.android
+package com.lyft.domic.android.rendering
 
 import java.util.concurrent.locks.ReadWriteLock
 import java.util.concurrent.locks.ReentrantReadWriteLock
 
 internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
 
-    private val buffer1: MutableCollection<T> = ArrayList(20)
-    private val buffer2: MutableCollection<T> = ArrayList(20)
-    private var currentBuffer: MutableCollection<T> = buffer1
     private val lock: ReadWriteLock = ReentrantReadWriteLock()
+    private val bufferPool: MutableList<MutableCollection<T>> = ArrayList(3)
+    private var currentBuffer: MutableCollection<T> = obtainBuffer()
 
     override fun addOrReplace(item: T) {
         lock.writeLock().apply {
@@ -28,18 +27,13 @@ internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
         }
     }
 
-    override fun swapAndGetSnapshot(): Collection<T> {
+    override fun swapAndGet(): Collection<T> {
         return lock.writeLock().run {
             lock()
             val snapshot = currentBuffer
-
-            when (snapshot) {
-                buffer1 -> currentBuffer = buffer2
-                buffer2 -> currentBuffer = buffer1
-            }
+            currentBuffer = obtainBuffer()
 
             unlock()
-
             snapshot
         }
     }
@@ -49,6 +43,35 @@ internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
             lock()
             currentBuffer.remove(item)
             unlock()
+        }
+    }
+
+    override fun recycle(buffer: Collection<T>) {
+        lock.writeLock().apply {
+            lock()
+            buffer as MutableCollection<T>
+            buffer.clear()
+            bufferPool.add(buffer)
+            unlock()
+        }
+    }
+
+    private fun obtainBuffer(): MutableCollection<T> {
+        return lock.writeLock().run {
+            lock()
+
+            val result = if (bufferPool.isEmpty()) {
+                ArrayList(20)
+            } else {
+
+                val bp = bufferPool[0]
+                bufferPool.removeAt(0)
+                bp
+            }
+
+            unlock()
+
+            result
         }
     }
 }

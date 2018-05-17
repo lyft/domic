@@ -1,13 +1,13 @@
-package com.lyft.domic.android
+package com.lyft.domic.android.rendering
 
 import android.view.Choreographer
-import com.lyft.domic.api.Renderer
+import com.lyft.domic.api.rendering.Renderer
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.atomic.AtomicInteger
 
 class AndroidRenderer(
@@ -24,7 +24,7 @@ class AndroidRenderer(
         fun getInstance(): AndroidRenderer = INSTANCE
     }
 
-    // TODO make a pool of objects similar to Message.obtain() to reduce allocations?
+    // TODO make a pool of objects similar to Message.obtain() to reduce allocations.
     internal class Actionw(private val streamId: Int, private val source: Action) : Action {
 
         override fun run() = source.run()
@@ -45,9 +45,14 @@ class AndroidRenderer(
         disposable = Observable
                 .interval(0, bufferTimeWindowMs, MILLISECONDS, timeScheduler)
                 .filter { buffer.isEmpty() == false }
-                .map { buffer.swapAndGetSnapshot() }
-                .subscribe { actions ->
-                    choreographer.postFrameCallback { actions.forEach { it.run() } }
+                .map { buffer.swapAndGet() }
+                .subscribe { bufferToRender ->
+                    choreographer.postFrameCallback {
+                        bufferToRender.forEach { it.run() }
+
+                        // Make sure we don't synchronize on Main Thread.
+                        timeScheduler.scheduleDirect { buffer.recycle(bufferToRender) }
+                    }
                 }
     }
 

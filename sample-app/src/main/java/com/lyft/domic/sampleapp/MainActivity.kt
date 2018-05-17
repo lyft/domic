@@ -2,7 +2,7 @@ package com.lyft.domic.sampleapp
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.lyft.domic.android.AndroidRenderer
+import com.lyft.domic.android.rendering.AndroidRenderer
 import com.lyft.domic.sampleapp.signin.RealSignInService
 import com.lyft.domic.sampleapp.signin.RealSignInView
 import com.lyft.domic.sampleapp.signin.SignInViewController

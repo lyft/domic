@@ -7,11 +7,13 @@ import com.jakewharton.rx.replayingShare
 import com.lyft.domic.api.subscribe
 import com.lyft.domic.sampleapp.signin.SignInService.Credentials
 import com.lyft.domic.sampleapp.signin.SignInService.SignInResult
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.Observables
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.withLatestFrom
+import java.util.concurrent.TimeUnit
 
 class SignInViewController(view: SignInView, service: SignInService): Disposable {
 
