@@ -1,20 +1,25 @@
-package com.lyft.domic.android
+package com.lyft.domic.android.rendering
 
 import android.view.Choreographer
-import com.lyft.domic.api.Renderer
+import com.lyft.domic.api.rendering.Renderer
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Test
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class AndroidRendererTest {
 
     private val choreographer = mock<Choreographer>()
     private val timeScheduler = TestScheduler()
     private val bufferTimeWindow = 8L
-    private val renderer: Renderer = AndroidRenderer(choreographer, timeScheduler, bufferTimeWindow)
+    private val renderer: Renderer = AndroidRenderer(
+            choreographer,
+            timeScheduler,
+            bufferTimeWindow,
+            RenderingBufferImpl()
+    )
     private val actions = listOf<Action>(mock(), mock(), mock(), mock())
 
     @Test
@@ -28,12 +33,17 @@ class AndroidRendererTest {
 
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 
-        actions.forEach { action -> verify(action, times(1)).run() }
+        actions
+                // All actions in same stream must be dismissed in favor of the last one.
+                .take(actions.size - 1)
+                .forEach { action -> verify(action, never()).run() }
+
+        verify(actions.last(), times(1)).run()
     }
 
     @Test
-    fun buffersActionsInTimeWindow() {
-        renderer.render(Observable.fromIterable(actions))
+    fun buffersActionsInSingleChoreographerCallWithinTimeWindow() {
+        actions.forEach { action -> renderer.render(Observable.just(action)) }
 
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 
@@ -42,18 +52,30 @@ class AndroidRendererTest {
     }
 
     @Test
-    fun actionCrossedBufferTimeWindowCausesSeparateChoreographerCall() {
-        renderer.render(Observable.just(mock()))
+    fun executesActionsBufferedInSingleChoreographerCallWithinTimeWindow() {
+        whenever(choreographer.postFrameCallback(any())).then { invocation ->
+            (invocation.arguments[0] as Choreographer.FrameCallback)
+                    .doFrame(0)
+        }
+
+        actions.forEach { action -> renderer.render(Observable.just(action)) }
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 
-        renderer.render(Observable.just(mock()))
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-
-        verify(choreographer, times(2)).postFrameCallback(any())
+        actions.forEach { action -> verify(action, times(1)).run() }
     }
 
     @Test
-    fun actionsAcrossBufferTimeWindowGetsExecutedInOrder() {
+    fun actionCrossedBufferTimeWindowCausesSeparateChoreographerCall() {
+        actions.forEach { action ->
+            renderer.render(Observable.just(mock()))
+            timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        }
+
+        verify(choreographer, times(actions.size)).postFrameCallback(any())
+    }
+
+    @Test
+    fun doesNotExecuteOldActionsAgain() {
         whenever(choreographer.postFrameCallback(any())).then { invocation ->
             (invocation.arguments[0] as Choreographer.FrameCallback)
                     .doFrame(0)
@@ -75,7 +97,7 @@ class AndroidRendererTest {
 
     @Test
     fun actionsAreNotExecutedWithoutChoreographerCallback() {
-        renderer.render(Observable.fromIterable(actions))
+        actions.forEach { action -> renderer.render(Observable.just(action)) }
 
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 

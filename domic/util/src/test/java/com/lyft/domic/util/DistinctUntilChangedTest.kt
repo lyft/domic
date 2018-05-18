@@ -2,7 +2,6 @@ package com.lyft.domic.util
 
 import io.reactivex.Observable
 import org.junit.Test
-import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.atomic.AtomicReferenceArray
 
 class DistinctUntilChangedTest {

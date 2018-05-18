@@ -1,9 +1,9 @@
 package com.lyft.domic.sampleapp.signin
 
-import com.lyft.domic.sampleapp.signin.SignInService.*
+import com.lyft.domic.sampleapp.signin.SignInService.SignInResult
 import io.reactivex.Observable
 import java.util.*
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.SECONDS
 
 class RealSignInService : SignInService {
     override fun signIn(credentials: SignInService.Credentials) = Observable

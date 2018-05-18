@@ -1,8 +1,8 @@
 package com.lyft.domic.android
 
 import com.lyft.domic.api.Button
-import com.lyft.domic.api.Renderer
 import com.lyft.domic.api.TextView
+import com.lyft.domic.api.rendering.Renderer
 
 class AndroidButton(
         private val realButton: android.widget.Button,
