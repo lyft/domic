@@ -20,20 +20,22 @@ interface RenderingBuffer<T> {
     fun isEmpty(): Boolean
 
     /**
-     * Atomically swaps *current* underlying buffer with another.
-     * Subsequent reads and writes on this [RenderingBuffer] will work against another buffer until it's swapped.
+     * Atomically swaps *current* underlying buffer with another and returns the one that was
+     * *current* before swap.
+     *
+     * Subsequent reads and writes on this [RenderingBuffer] will work against another buffer
+     * until it's swapped.
      * "Another" buffer is guaranteed to be empty.
      *
      * - Returned buffer must not be modified.
-     * - Returned buffer is safe to read if you can guarantee that [swapAndGet]
-     * won't be called during read.
      * - Returned buffer should be recycled after use via [recycle].
+     * - Returned buffer is safe to read if it's not yet recycled via [recycle].
      *
      * See [Double Buffering in Computer Graphics](https://en.wikipedia.org/wiki/Multiple_buffering#Double_buffering_in_computer_graphics).
      *
      * @return read-only view to *current* underlying buffer.
      */
-    fun swapAndGet(): Collection<T>
+    fun getAndSwap(): Collection<T>
 
     /**
      * Removes item from *current* underlying buffer. Relies on item's [equals].

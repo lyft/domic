@@ -45,7 +45,7 @@ class AndroidRenderer(
         disposable = Observable
                 .interval(0, bufferTimeWindowMs, MILLISECONDS, timeScheduler)
                 .filter { buffer.isEmpty() == false }
-                .map { buffer.swapAndGet() }
+                .map { buffer.getAndSwap() }
                 .subscribe { bufferToRender ->
                     choreographer.postFrameCallback {
                         bufferToRender.forEach { it.run() }

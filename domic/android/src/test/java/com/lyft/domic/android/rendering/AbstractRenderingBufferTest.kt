@@ -13,7 +13,7 @@ abstract class AbstractRenderingBufferTest {
 
         buffer.addOrReplace("a")
 
-        assertThat(buffer.swapAndGet()).isEqualTo(listOf("a"))
+        assertThat(buffer.getAndSwap()).isEqualTo(listOf("a"))
     }
 
     @Test
@@ -24,7 +24,7 @@ abstract class AbstractRenderingBufferTest {
         buffer.addOrReplace("b")
         buffer.addOrReplace("a")
 
-        assertThat(buffer.swapAndGet()).isEqualTo(listOf("b", "a"))
+        assertThat(buffer.getAndSwap()).isEqualTo(listOf("b", "a"))
     }
 
     @Test
@@ -44,48 +44,48 @@ abstract class AbstractRenderingBufferTest {
     }
 
     @Test
-    fun swapAndGetSnapshotReturnsCurrentBuffer() {
+    fun getAndSwapReturnsCurrentBuffer() {
         val buffer = createRenderingBuffer<String>()
 
         buffer.addOrReplace("a")
         buffer.addOrReplace("b")
 
-        val snapshot = buffer.swapAndGet()
+        val snapshot = buffer.getAndSwap()
 
         assertThat(snapshot).isEqualTo(listOf("a", "b"))
     }
 
     @Test
-    fun swapAndGetSnapshotSwapsBuffer() {
+    fun getAndSwapSwapsBuffer() {
         val buffer = createRenderingBuffer<String>()
 
         buffer.addOrReplace("a")
         buffer.addOrReplace("b")
 
-        buffer.swapAndGet()
+        buffer.getAndSwap()
 
         buffer.addOrReplace("c")
         buffer.addOrReplace("d")
 
-        val snapshot = buffer.swapAndGet()
+        val snapshot = buffer.getAndSwap()
 
         assertThat(snapshot).isEqualTo(listOf("c", "d"))
     }
 
     @Test
-    fun swapAndGetSnapshotClearsPreviousBuffer() {
+    fun getAndSwapClearsPreviousBuffer() {
         val buffer = createRenderingBuffer<String>()
 
         buffer.addOrReplace("a")
         buffer.addOrReplace("b")
 
-        buffer.swapAndGet()
+        buffer.getAndSwap()
 
         buffer.addOrReplace("c")
         buffer.addOrReplace("d")
 
-        buffer.swapAndGet()
-        val snapshot2 = buffer.swapAndGet()
+        buffer.getAndSwap()
+        val snapshot2 = buffer.getAndSwap()
 
         assertThat(snapshot2).isEmpty()
     }
@@ -100,22 +100,22 @@ abstract class AbstractRenderingBufferTest {
 
         buffer.remove("b")
 
-        assertThat(buffer.swapAndGet()).isEqualTo(listOf("a", "c"))
+        assertThat(buffer.getAndSwap()).isEqualTo(listOf("a", "c"))
     }
 
     @Test
-    fun recycleReusesBufferForSwapAndGet() {
+    fun recycleReusesBufferForgetAndSwap() {
         val buffer = createRenderingBuffer<String>()
 
         buffer.addOrReplace("a")
         buffer.addOrReplace("b")
 
-        val b1 = buffer.swapAndGet()
+        val b1 = buffer.getAndSwap()
 
         buffer.recycle(b1)
 
-        buffer.swapAndGet()
-        val b3 = buffer.swapAndGet()
+        buffer.getAndSwap()
+        val b3 = buffer.getAndSwap()
 
         assertThat(b1).isSameAs(b3)
     }
@@ -127,7 +127,7 @@ abstract class AbstractRenderingBufferTest {
         buffer.addOrReplace("a")
         buffer.addOrReplace("b")
 
-        val b1 = buffer.swapAndGet()
+        val b1 = buffer.getAndSwap()
 
         buffer.recycle(b1)
 

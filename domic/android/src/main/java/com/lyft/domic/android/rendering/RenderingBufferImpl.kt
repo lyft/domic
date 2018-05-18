@@ -24,7 +24,7 @@ internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
         }
     }
 
-    override fun swapAndGet(): Collection<T> {
+    override fun getAndSwap(): Collection<T> {
         return lock.writeLock().withLock {
             val snapshot = currentBuffer
             currentBuffer = obtainBuffer()
