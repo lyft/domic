@@ -23,7 +23,7 @@ subprojects { subProject ->
         if (isAndroid) {
             configure(android.lintOptions, domicLintOptions())
         } else if (isJvm) {
-            plugins.apply('com.android.lint') // Lint supports JVM modules too.
+            subProject.plugins.apply('com.android.lint') // Lint supports JVM modules too.
             configure(lintOptions, domicLintOptions())
         }
     }
