@@ -8,6 +8,8 @@ def domicLintOptions() {
 
         htmlReport true
         xmlReport true
+
+        enable 'Interoperability'
     }
 }
 

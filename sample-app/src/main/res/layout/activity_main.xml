@@ -12,8 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
+        android:autofillHints="emailAddress"
+        android:hint="@string/email_hint"
         android:inputType="textEmailAddress"
-        android:hint="@string/email_hint" />
+        tools:targetApi="o" />
 
     <EditText
         android:id="@+id/password_edit_text"
@@ -22,8 +24,10 @@
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginTop="20dp"
+        android:autofillHints="password"
+        android:hint="@string/password_hint"
         android:inputType="textPassword"
-        android:hint="@string/password_hint" />
+        tools:targetApi="o" />
 
     <Button
         android:id="@+id/sign_in_button"
