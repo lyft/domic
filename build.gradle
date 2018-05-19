@@ -20,3 +20,5 @@ allprojects {
         google()
     }
 }
+
+apply from: "$rootDir/gradle/lint.gradle"
