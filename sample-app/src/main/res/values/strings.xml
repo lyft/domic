@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Virtual DOM Sample</string>
-    <string name="hello_world">Hello World!</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_in_button">Sign in</string>
 </resources>
