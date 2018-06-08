@@ -16,14 +16,13 @@ class AndroidEditText(
 ) : EditText {
 
     private val asTextView: TextView = AndroidTextView(realEditText, renderer)
+    private val state = AtomicReferenceArray<Any>(1)
 
     override val observe: EditText.Observe = object : EditText.Observe, TextView.Observe by asTextView.observe {
 
     }
 
     override val change: EditText.Change = object : EditText.Change, TextView.Change by asTextView.change {
-
-        private val state = AtomicReferenceArray<Any>(1)
 
         override fun selection(selectionValues: Observable<Int>): Disposable {
             return selectionValues

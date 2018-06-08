@@ -24,6 +24,7 @@ class AndroidCompoundButton(
     }
 
     private val asButton = AndroidButton(realCompoundButton, renderer)
+    private val state = AtomicReferenceArray<Any>(1)
 
     override val observe: CompoundButton.Observe = object : CompoundButton.Observe, Button.Observe by asButton.observe {
 
@@ -38,17 +39,15 @@ class AndroidCompoundButton(
 
     override val change: CompoundButton.Change = object : CompoundButton.Change, Button.Change by asButton.change {
 
-        private val state = AtomicReferenceArray<Any>(1)
-
-        init {
-            observe
-                    .checked
-                    .subscribe { state.set(STATE_INDEX_CHECKED, it) }
-        }
-
         override fun checked(checkedValues: Observable<Boolean>): Disposable = checkedValues
                 .distinctUntilChanged(state, STATE_INDEX_CHECKED)
                 .map { Action { realCompoundButton.isChecked = it } }
                 .subscribe(renderer::render)
+    }
+
+    init {
+        observe
+                .checked
+                .subscribe { state.set(STATE_INDEX_CHECKED, it) }
     }
 }

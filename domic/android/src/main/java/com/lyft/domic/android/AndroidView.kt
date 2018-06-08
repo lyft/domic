@@ -16,6 +16,8 @@ class AndroidView(
         private val renderer: Renderer
 ) : View {
 
+    private val state = AtomicReferenceArray<Any>(6)
+
     override val observe = object : View.Observe {
 
         override val clicks: Observable<Any> by lazy {
@@ -41,8 +43,6 @@ class AndroidView(
     }
 
     override val change = object : View.Change {
-
-        private val state = AtomicReferenceArray<Any>(6)
 
         override fun activated(activatedValues: Observable<Boolean>): Disposable {
             return activatedValues
