@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import java.util.concurrent.atomic.AtomicReferenceArray
 
 /**
- * Similar to distinctUntilChanged but allows to use shared atomic state thus letting Domic handle
+ * Similar to [Observable.distinctUntilChanged] but allows to use shared atomic state thus letting Domic handle
  * multiple rx streams updating same property.
  */
 fun <T> Observable<out T>.distinctUntilChanged(sharedState: AtomicReferenceArray<Any>, index: Int): Observable<T> = switchMap { newValue ->

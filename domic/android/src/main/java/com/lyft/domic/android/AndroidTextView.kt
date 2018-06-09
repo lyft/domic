@@ -1,6 +1,7 @@
 package com.lyft.domic.android
 
 import com.jakewharton.rxbinding2.widget.RxTextView
+import com.lyft.domic.android.annotations.MutatedByFramework
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.View
 import com.lyft.domic.api.rendering.Renderer
@@ -17,16 +18,22 @@ class AndroidTextView(
         private val renderer: Renderer
 ) : TextView {
 
+    companion object {
+        private const val STATE_INDEX_TEXT = 0
+    }
+
     private val asView: View = AndroidView(realTextView, renderer)
+    private val state = AtomicReferenceArray<Any>(1)
 
     override val observe: TextView.Observe = object : TextView.Observe, View.Observe by asView.observe {
 
-        override val textChanges: Observable<out CharSequence> by lazy {
-            RxTextView
-                    .textChanges(realTextView)
-                    .subscribeOn(mainThread())
-                    .share()
-        }
+        @MutatedByFramework
+        // TODO: rename to 'text'?
+        override val textChanges: Observable<out CharSequence> =
+                RxTextView
+                        .textChanges(realTextView)
+                        .subscribeOn(mainThread())
+                        .share()
 
         override val textChangeEvents: Observable<Any> by lazy {
             RxTextView
@@ -39,11 +46,16 @@ class AndroidTextView(
 
     override val change: TextView.Change = object : TextView.Change, View.Change by asView.change {
 
-        private val state = AtomicReferenceArray<Any>(1)
-
         override fun text(textValues: Observable<out CharSequence>): Disposable = textValues
-                .distinctUntilChanged(state, 0)
+                .distinctUntilChanged(state, STATE_INDEX_TEXT)
                 .map { Action { realTextView.text = it } }
                 .subscribe(renderer::render)
+    }
+
+    init {
+        observe
+                .textChanges
+                // TODO: SpannableStringBuilder that comes from framework callbacks returns false if compared with same-value String, should we map value to String?
+                .subscribe { state.set(STATE_INDEX_TEXT, it) }
     }
 }
