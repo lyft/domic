@@ -4,4 +4,5 @@ include ':domic:test'
 include ':domic:util'
 
 include ':samples:mvvm'
+include ':samples:mvp'
 include ':samples:shared'

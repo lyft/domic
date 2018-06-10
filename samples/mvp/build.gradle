@@ -1,0 +1,55 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        applicationId 'com.lyf.domic.samples.mvp'
+        compileSdkVersion versions.compileSdk
+        targetSdkVersion versions.targetSdk
+        minSdkVersion versions.minSdk
+        versionCode 1
+        versionName '0.0.1'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+    }
+}
+
+// See `dependencies.gradle`.
+dependencies {
+    implementation libraries.kotlinStdlib
+
+    implementation libraries.samplesShared
+
+    implementation libraries.rxJava
+    implementation libraries.rxAndroid
+    implementation libraries.rxKotlin
+    implementation libraries.rxReplayingShareKotlin
+    implementation libraries.koptionalRxJava2
+
+    implementation libraries.domicApi
+    implementation libraries.domicAndroid
+}
+
+dependencies {
+    testImplementation libraries.junit
+    testImplementation libraries.assertJ
+    testImplementation libraries.kotlinMockito
+    testImplementation libraries.domicTest
+    testImplementation libraries.rxRelay
+}
+
+configurations.all {
+    resolutionStrategy.force libraries.supportAnnotations
+    resolutionStrategy.force libraries.kotlinStdlib
+}
