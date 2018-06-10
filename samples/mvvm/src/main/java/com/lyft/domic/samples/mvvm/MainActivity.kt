@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
                 .fromCallable { SignInViewModel(view, RealSignInService()) }
                 // Showcase that you can observe Virtual DOM on non-main thread.
                 .subscribeOn(Schedulers.computation())
-                .subscribe { viewController -> disposable += viewController }
+                .subscribe { viewModel -> disposable += viewModel }
     }
 
     override fun onDestroy() {
