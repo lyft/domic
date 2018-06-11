@@ -9,7 +9,7 @@ import com.lyft.domic.api.subscribe
 import com.lyft.domic.samples.mvp.R
 import io.reactivex.Observable
 
-class RealSignInView(root: ViewGroup, renderer: Renderer) : SignInView {
+class AndroidSignInView(root: ViewGroup, renderer: Renderer) : SignInView {
     private val emailEditText by lazy { AndroidEditText(root.findViewById(R.id.email_edit_text), renderer) }
     private val passwordEditText by lazy { AndroidEditText(root.findViewById(R.id.password_edit_text), renderer) }
     private val signInButton by lazy { AndroidButton(root.findViewById(R.id.sign_in_button), renderer) }
