@@ -1,5 +1,7 @@
 package com.lyft.domic.android.rendering
 
+import android.os.Looper
+import android.support.annotation.MainThread
 import android.view.Choreographer
 import com.lyft.domic.api.rendering.Renderer
 import io.reactivex.Observable
@@ -7,6 +9,7 @@ import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -14,7 +17,8 @@ class AndroidRenderer(
         private val choreographer: Choreographer = Choreographer.getInstance(),
         timeScheduler: Scheduler = Schedulers.computation(),
         bufferTimeWindowMs: Long = 8, // We'll adjust if needed.
-        private val buffer: RenderingBuffer<Action> = RenderingBufferImpl()
+        private val buffer: RenderingBuffer<Action> = RenderingBufferImpl(),
+        private val renderingThreadChecker: Callable<Boolean> = Callable { Looper.myLooper() == Looper.getMainLooper() }
 ) : Renderer {
 
     companion object {
@@ -72,6 +76,24 @@ class AndroidRenderer(
                 ),
                 disposable
         )
+    }
+
+    /**
+     * "Renders" what is in the buffer at the moment, blocking the caller thread.
+     *
+     * Must be called on Main Thread.
+     */
+    @MainThread
+    override fun renderCurrentBuffer() {
+        if (renderingThreadChecker.call() == false) {
+            throw IllegalStateException("Must be called on correct thread (Main Thread if used with default renderingThreadChecker.")
+        }
+
+        val currentBuffer = buffer.getAndSwap()
+
+        currentBuffer.forEach { it.run() }
+
+        buffer.recycle(currentBuffer)
     }
 
     override fun shutdown() = disposable.dispose()
