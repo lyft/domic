@@ -3,4 +3,5 @@ include ':domic:android'
 include ':domic:test'
 include ':domic:util'
 
-include ':sample-app'
+include ':samples:mvvm'
+include ':samples:shared'

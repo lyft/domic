@@ -39,6 +39,8 @@ ext.libraries = [
         domicTest              : project(':domic:test'),
         domicUtil              : project(':domic:util'),
 
+        samplesShared          : project(':samples:shared'),
+
         supportAppCompat       : "com.android.support:appcompat-v7:$versions.support",
         supportAnnotations     : "com.android.support:support-annotations:$versions.support",
         supportRecyclerView    : "com.android.support:recyclerview-v7:$versions.support",
