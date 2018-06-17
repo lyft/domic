@@ -21,3 +21,6 @@ cache:
   directories:
     - $HOME/.gradle/caches
     - $HOME/.gradle/wrapper
+
+notifications:
+  email: false
