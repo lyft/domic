@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.lyft.domic.android.rendering.AndroidRenderer
 import com.lyft.domic.samples.shared.signin.RealSignInService
-import com.lyft.domic.samples.mvvm.signin.RealSignInView
+import com.lyft.domic.samples.mvvm.signin.AndroidSignInView
 import com.lyft.domic.samples.mvvm.signin.SignInViewModel
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -19,13 +19,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val view = RealSignInView(findViewById(android.R.id.content), AndroidRenderer.getInstance())
+        val view = AndroidSignInView(findViewById(android.R.id.content), AndroidRenderer.getInstance())
 
         disposable += Single
                 .fromCallable { SignInViewModel(view, RealSignInService()) }
                 // Showcase that you can observe Virtual DOM on non-main thread.
                 .subscribeOn(Schedulers.computation())
-                .subscribe { viewController -> disposable += viewController }
+                .subscribe { viewModel -> disposable += viewModel }
     }
 
     override fun onDestroy() {

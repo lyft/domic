@@ -1,20 +1,18 @@
 package com.lyft.domic.samples.mvvm.signin
 
-import com.jakewharton.rxrelay2.PublishRelay
-import com.lyft.domic.samples.shared.signin.SignInService
-import com.lyft.domic.samples.shared.signin.SignInService.*
+import com.lyft.domic.samples.shared.signin.SignInService.Credentials
+import com.lyft.domic.samples.shared.signin.SignInService.SignInResult
+import com.lyft.domic.samples.shared.signin.TestSignInService
 import com.lyft.domic.test.TestButton
 import com.lyft.domic.test.TestEditText
 import com.lyft.domic.test.TestTextView
-import com.nhaarman.mockito_kotlin.spy
-import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
 class SignInViewModelTest {
 
     private val view = TestSignInView()
-    private val service = spy(TestSignInService())
+    private val service = TestSignInService()
 
     init {
         // Just instantiate, view controller can actually be converted into a function.
@@ -51,7 +49,7 @@ class SignInViewModelTest {
 
         view.signInButton.simulate.click()
 
-        verify(service).signIn(Credentials(email = "test@email", password = "passw0rd"))
+        service.signInCredentialsObserver.assertValue(Credentials(email = "test@email", password = "passw0rd"))
     }
 
     @Test
@@ -71,12 +69,5 @@ class SignInViewModelTest {
         override val passwordEditText = TestEditText()
         override val signInButton = TestButton()
         override val resultTextView = TestTextView()
-    }
-
-    open class TestSignInService : SignInService {
-
-        val signIn = PublishRelay.create<SignInService.SignInResult>()
-
-        override fun signIn(credentials: SignInService.Credentials) = signIn
     }
 }
