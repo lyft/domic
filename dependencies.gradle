@@ -24,27 +24,27 @@ ext.versions = [
 ]
 
 ext.libraries = [
-        kotlinStdlib           : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+        kotlinStdlib          : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
 
-        rxJava                 : "io.reactivex.rxjava2:rxjava:$versions.rxJava",
-        rxAndroid              : "io.reactivex.rxjava2:rxandroid:$versions.rxAndroid",
-        rxBinding              : "com.jakewharton.rxbinding2:rxbinding:$versions.rxBinding",
-        rxKotlin               : "io.reactivex.rxjava2:rxkotlin:$versions.rxKotlin",
-        rxRelay                : "com.jakewharton.rxrelay2:rxrelay:$versions.rxRelay",
-        rxReplayingShareKotlin : "com.jakewharton.rx2:replaying-share-kotlin:$versions.rxReplayingShare",
-        koptionalRxJava2       : "com.gojuno.koptional:koptional-rxjava2-extensions:$versions.koptional",
+        rxJava                : "io.reactivex.rxjava2:rxjava:$versions.rxJava",
+        rxAndroid             : "io.reactivex.rxjava2:rxandroid:$versions.rxAndroid",
+        rxBinding             : "com.jakewharton.rxbinding2:rxbinding:$versions.rxBinding",
+        rxKotlin              : "io.reactivex.rxjava2:rxkotlin:$versions.rxKotlin",
+        rxRelay               : "com.jakewharton.rxrelay2:rxrelay:$versions.rxRelay",
+        rxReplayingShareKotlin: "com.jakewharton.rx2:replaying-share-kotlin:$versions.rxReplayingShare",
+        koptionalRxJava2      : "com.gojuno.koptional:koptional-rxjava2-extensions:$versions.koptional",
+]
 
-        domicApi               : project(':domic:api'),
-        domicAndroid           : project(':domic:android'),
-        domicTest              : project(':domic:test'),
-        domicUtil              : project(':domic:util'),
+ext.supportLibraries = [
+        annotations     : "com.android.support:support-annotations:$versions.support",
+        appCompat       : "com.android.support:appcompat-v7:$versions.support",
+        recyclerView    : "com.android.support:recyclerview-v7:$versions.support",
+        constraintLayout: "com.android.support.constraint:constraint-layout:$versions.supportConstraintLayout",
+]
 
-        supportAppCompat       : "com.android.support:appcompat-v7:$versions.support",
-        supportAnnotations     : "com.android.support:support-annotations:$versions.support",
-        supportRecyclerView    : "com.android.support:recyclerview-v7:$versions.support",
-        supportConstraintLayout: "com.android.support.constraint:constraint-layout:$versions.supportConstraintLayout",
-
-        junit                  : "junit:junit:$versions.junit",
-        kotlinMockito          : "com.nhaarman:mockito-kotlin:$versions.kotlinMockito",
-        assertJ                : "org.assertj:assertj-core:$versions.assertJ",
+ext.testLibraries = [
+        junit        : "junit:junit:$versions.junit",
+        kotlinMockito: "com.nhaarman:mockito-kotlin:$versions.kotlinMockito",
+        kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
+        assertJ      : "org.assertj:assertj-core:$versions.assertJ",
 ]

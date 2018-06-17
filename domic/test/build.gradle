@@ -2,7 +2,10 @@ apply plugin: 'java-library'
 apply plugin: 'kotlin'
 
 dependencies {
-    api libraries.domicApi
+    api project(':domic:api')
+}
+
+dependencies {
+    implementation project(':domic:util')
     implementation libraries.rxRelay
-    implementation libraries.domicUtil
 }

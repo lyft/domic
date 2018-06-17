@@ -7,5 +7,5 @@ dependencies {
 }
 
 dependencies {
-    testImplementation libraries.junit
+    testImplementation testLibraries.junit
 }
