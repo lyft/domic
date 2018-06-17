@@ -6,7 +6,10 @@ import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import io.reactivex.functions.Action
 import io.reactivex.schedulers.TestScheduler
+import junit.framework.Assert.fail
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.util.concurrent.Callable
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class AndroidRendererTest {
@@ -14,11 +17,13 @@ class AndroidRendererTest {
     private val choreographer = mock<Choreographer>()
     private val timeScheduler = TestScheduler()
     private val bufferTimeWindow = 8L
+    private val mainThreadChecker = mock<Callable<Boolean>>()
     private val renderer: Renderer = AndroidRenderer(
             choreographer,
             timeScheduler,
             bufferTimeWindow,
-            RenderingBufferImpl()
+            RenderingBufferImpl(),
+            mainThreadChecker
     )
     private val actions = listOf<Action>(mock(), mock(), mock(), mock())
 
@@ -67,7 +72,7 @@ class AndroidRendererTest {
     @Test
     fun actionCrossedBufferTimeWindowCausesSeparateChoreographerCall() {
         actions.forEach { action ->
-            renderer.render(Observable.just(mock()))
+            renderer.render(Observable.just(action))
             timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
         }
 
@@ -113,6 +118,31 @@ class AndroidRendererTest {
         timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
 
         verify(choreographer, never()).postFrameCallback(any())
+    }
+
+    @Test
+    fun renderCurrentBufferThrowsOnWrongThread() {
+        renderer.render(Observable.fromIterable(actions))
+        whenever(mainThreadChecker.call()).thenReturn(false)
+
+        try {
+            renderer.renderCurrentBuffer()
+            fail()
+        } catch (expected: IllegalStateException) {
+            assertThat(expected).hasMessage("Must be called on correct thread (Main Thread if used with default mainThreadChecker).")
+        }
+
+        actions.forEach { action -> verify(action, never()).run() }
+    }
+
+    @Test
+    fun renderCurrentBufferRenders() {
+        actions.forEach { action -> renderer.render(Observable.just(action)) }
+        whenever(mainThreadChecker.call()).thenReturn(true)
+
+        renderer.renderCurrentBuffer()
+
+        actions.forEach { action -> verify(action).run() }
     }
 
     @Test
