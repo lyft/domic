@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        compileSdkVersion versions.compileSdk
+        buildToolsVersion versions.buildTools
+    }
+
+    lintOptions {
+        disable 'UnusedResources' // Lint doesn't see resource usage from other modules.
+    }
+}
+
+dependencies {
+    api libraries.kotlinStdlib
+    api libraries.rxJava
+    api libraries.rxRelay
+    api supportLibraries.appCompat
+    api supportLibraries.constraintLayout
+}
+

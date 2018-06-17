@@ -80,7 +80,7 @@ The project doesn't have a public release yet because *we want to gather some fe
 
 We're planning to start shipping `0.1.0` version soon though, please *stay tuned!*
 
-Right now we expect community members interested in this project to clone it and play with its source code and [`sample-app`][sample-app], submit issues and pull requests to shape the project!
+Right now we expect community members interested in this project to clone it and play with its source code and [`samples`][samples], submit issues and pull requests to shape the project!
 
 ## Examples
 
@@ -274,7 +274,7 @@ Domic was influenced by:
 Special credit ❤️ goes to [Juno][juno] Android team, specifically Igor Korotenko for development efforts in similar direction.
 
 [dom]: https://en.wikipedia.org/wiki/Document_Object_Model
-[sample-app]: sample-app
+[samples]: samples
 [rxjava]: https://github.com/ReactiveX/RxJava
 [reactjs]: https://reactjs.org
 [litho]: https://fblitho.com
