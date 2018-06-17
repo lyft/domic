@@ -16,15 +16,18 @@ android {
 }
 
 dependencies {
-    api libraries.domicApi
-    implementation libraries.rxAndroid
-    implementation libraries.rxBinding
-    implementation libraries.domicUtil
+    api project(':domic:api')
 }
 
 dependencies {
-    testImplementation libraries.junit
-    testImplementation libraries.assertJ
-    testImplementation libraries.kotlinMockito
+    implementation project(':domic:util')
+    implementation libraries.rxAndroid
+    implementation libraries.rxBinding
+}
+
+dependencies {
+    testImplementation testLibraries.junit
+    testImplementation testLibraries.assertJ
+    testImplementation testLibraries.kotlinMockito
 }
 

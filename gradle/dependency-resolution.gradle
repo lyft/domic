@@ -1,0 +1,25 @@
+subprojects { subProject ->
+    afterEvaluate {
+        def plugins = subProject.getPlugins()
+
+        def isAndroid = plugins.hasPlugin('com.android.application') || plugins.hasPlugin('com.android.library')
+        def isJvm = plugins.hasPlugin('java-library') || plugins.hasPlugin('kotlin')
+
+        if (isAndroid || isJvm) {
+            subProject.configurations.all { configuration ->
+                // Ignore ':lintClassPath' configuration as it has version conflicts.
+                if (!"$configuration".contains(':lintClassPath')) {
+                    resolutionStrategy {
+                        failOnVersionConflict()
+
+                        def allLibraries = libraries.values() +
+                                supportLibraries.values() +
+                                testLibraries.values()
+
+                        allLibraries.each { library -> force library }
+                    }
+                }
+            }
+        }
+    }
+}
