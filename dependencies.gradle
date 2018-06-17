@@ -48,3 +48,8 @@ ext.testLibraries = [
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
         assertJ      : "org.assertj:assertj-core:$versions.assertJ",
 ]
+
+ext.gradlePlugins = [
+        android: "com.android.tools.build:gradle:$versions.agp",
+        kotlin : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+]
