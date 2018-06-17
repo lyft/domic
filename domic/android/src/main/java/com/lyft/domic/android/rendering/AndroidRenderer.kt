@@ -18,7 +18,7 @@ class AndroidRenderer(
         timeScheduler: Scheduler = Schedulers.computation(),
         bufferTimeWindowMs: Long = 8, // We'll adjust if needed.
         private val buffer: RenderingBuffer<Action> = RenderingBufferImpl(),
-        private val renderingThreadChecker: Callable<Boolean> = Callable { Looper.myLooper() == Looper.getMainLooper() }
+        private val mainThreadChecker: Callable<Boolean> = Callable { Looper.myLooper() == Looper.getMainLooper() }
 ) : Renderer {
 
     companion object {
@@ -85,8 +85,8 @@ class AndroidRenderer(
      */
     @MainThread
     override fun renderCurrentBuffer() {
-        if (renderingThreadChecker.call() == false) {
-            throw IllegalStateException("Must be called on correct thread (Main Thread if used with default renderingThreadChecker.")
+        if (mainThreadChecker.call() == false) {
+            throw IllegalStateException("Must be called on correct thread (Main Thread if used with default mainThreadChecker).")
         }
 
         val currentBuffer = buffer.getAndSwap()

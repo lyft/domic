@@ -17,13 +17,13 @@ class AndroidRendererTest {
     private val choreographer = mock<Choreographer>()
     private val timeScheduler = TestScheduler()
     private val bufferTimeWindow = 8L
-    private val renderingThreadChecker = mock<Callable<Boolean>>()
+    private val mainThreadChecker = mock<Callable<Boolean>>()
     private val renderer: Renderer = AndroidRenderer(
             choreographer,
             timeScheduler,
             bufferTimeWindow,
             RenderingBufferImpl(),
-            renderingThreadChecker
+            mainThreadChecker
     )
     private val actions = listOf<Action>(mock(), mock(), mock(), mock())
 
@@ -123,13 +123,13 @@ class AndroidRendererTest {
     @Test
     fun renderCurrentBufferThrowsOnWrongThread() {
         renderer.render(Observable.fromIterable(actions))
-        whenever(renderingThreadChecker.call()).thenReturn(false)
+        whenever(mainThreadChecker.call()).thenReturn(false)
 
         try {
             renderer.renderCurrentBuffer()
             fail()
         } catch (expected: IllegalStateException) {
-            assertThat(expected).hasMessage("Must be called on correct thread (Main Thread if used with default renderingThreadChecker.")
+            assertThat(expected).hasMessage("Must be called on correct thread (Main Thread if used with default mainThreadChecker).")
         }
 
         actions.forEach { action -> verify(action, never()).run() }
@@ -138,7 +138,7 @@ class AndroidRendererTest {
     @Test
     fun renderCurrentBufferRenders() {
         actions.forEach { action -> renderer.render(Observable.just(action)) }
-        whenever(renderingThreadChecker.call()).thenReturn(true)
+        whenever(mainThreadChecker.call()).thenReturn(true)
 
         renderer.renderCurrentBuffer()
 
