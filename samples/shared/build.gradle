@@ -16,6 +16,7 @@ android {
 dependencies {
     api libraries.kotlinStdlib
     api libraries.rxJava
+    api libraries.rxRelay
 
     api libraries.supportAppCompat
     api libraries.supportConstraintLayout
