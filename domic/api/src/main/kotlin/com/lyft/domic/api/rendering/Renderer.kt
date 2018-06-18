@@ -2,7 +2,6 @@ package com.lyft.domic.api.rendering
 
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
 
 interface Renderer {
 
@@ -11,16 +10,16 @@ interface Renderer {
      *
      * Implementation can be opinionated on grouping, and/or ordering of execution.
      *
-     * Each action's `Action.run()` will be called once on proper thread (ie Main Thread).
+     * [Renderer] might use [Change.equals] and [Change.hashCode] to compare [Change]s and optimize
+     * rendering pipeline based on that, for example render latest equal [Change] arrived
+     * within same buffering window.
      *
-     * TODO add @param reduce if `true` allows [Renderer] to reduce actions emitted by single [Observable]
-     * to be reduced down to last one within buffering time window thus reducing amount of actions
-     * that need to be rendered.
+     * Each [Change]'s [Change.perform] will be called once on proper thread (Main Thread by default).
      *
      * @return [Disposable] that allows to stop observing the [Observable]. [Renderer] should try
-     * to remove observed but not rendered actions from current buffer.
+     * to remove observed but not yet rendered actions from current buffer.
      */
-    fun render(actions: Observable<Action>): Disposable
+    fun render(changes: Observable<out Change>): Disposable
 
     /**
      * "Renders" what is in the buffer at the moment, blocking the caller thread.

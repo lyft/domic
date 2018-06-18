@@ -43,6 +43,11 @@ interface RenderingBuffer<T> {
     fun remove(item: T)
 
     /**
+     * Removes items from *current* underlying buffer. Relies on item's [equals].
+     */
+    fun remove(items: Collection<T>)
+
+    /**
      * Recycles used buffer into internal pool, it's illegal to use buffer after recycling.
      */
     fun recycle(buffer: Collection<T>)

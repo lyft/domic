@@ -19,7 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val view = AndroidSignInView(findViewById(android.R.id.content), AndroidRenderer.getInstance())
+        val renderer = AndroidRenderer()
+        val view = AndroidSignInView(findViewById(android.R.id.content), renderer)
 
         disposable += Single
                 .fromCallable { SignInViewModel(view, RealSignInService()) }
