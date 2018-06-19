@@ -1,5 +1,6 @@
 package com.lyft.domic.android
 
+import com.lyft.domic.android.rendering.mapToChange
 import com.lyft.domic.api.EditText
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.rendering.Renderer
@@ -7,13 +8,16 @@ import com.lyft.domic.api.subscribe
 import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
 import java.util.concurrent.atomic.AtomicReferenceArray
 
 class AndroidEditText(
         private val realEditText: android.widget.EditText,
         private val renderer: Renderer
 ) : EditText {
+
+    companion object {
+        private const val STATE_INDEX_SELECTION = 0
+    }
 
     private val asTextView: TextView = AndroidTextView(realEditText, renderer)
     private val state = AtomicReferenceArray<Any>(1)
@@ -26,8 +30,8 @@ class AndroidEditText(
 
         override fun selection(selectionValues: Observable<Int>): Disposable {
             return selectionValues
-                    .distinctUntilChanged(state, 0)
-                    .map { Action { realEditText.setSelection(it) } }
+                    .distinctUntilChanged(state, STATE_INDEX_SELECTION)
+                    .mapToChange(realEditText, STATE_INDEX_SELECTION) { realEditText.setSelection(it) }
                     .subscribe(renderer::render)
         }
     }

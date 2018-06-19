@@ -2,6 +2,7 @@ package com.lyft.domic.android
 
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.lyft.domic.android.annotations.MutatedByFramework
+import com.lyft.domic.android.rendering.mapToChange
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.View
 import com.lyft.domic.api.rendering.Renderer
@@ -10,7 +11,6 @@ import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
-import io.reactivex.functions.Action
 import java.util.concurrent.atomic.AtomicReferenceArray
 
 class AndroidTextView(
@@ -48,7 +48,7 @@ class AndroidTextView(
 
         override fun text(textValues: Observable<out CharSequence>): Disposable = textValues
                 .distinctUntilChanged(state, STATE_INDEX_TEXT)
-                .map { Action { realTextView.text = it } }
+                .mapToChange(realTextView, STATE_INDEX_TEXT) { realTextView.text = it }
                 .subscribe(renderer::render)
     }
 

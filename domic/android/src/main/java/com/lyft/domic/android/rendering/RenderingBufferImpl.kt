@@ -39,6 +39,12 @@ internal class RenderingBufferImpl<T> : RenderingBuffer<T> {
         }
     }
 
+    override fun remove(items: Collection<T>) {
+        lock.writeLock().withLock {
+            currentBuffer.removeAll(items)
+        }
+    }
+
     override fun recycle(buffer: Collection<T>) {
         lock.writeLock().withLock {
             buffer as MutableCollection<T>
