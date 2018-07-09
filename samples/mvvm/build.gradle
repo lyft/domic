@@ -33,7 +33,6 @@ dependencies {
     implementation libraries.kotlinStdlib
 
     implementation supportLibraries.appCompat
-    implementation supportLibraries.recyclerView
     implementation supportLibraries.constraintLayout
 
     implementation libraries.rxJava
