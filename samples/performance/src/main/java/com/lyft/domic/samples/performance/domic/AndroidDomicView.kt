@@ -24,7 +24,4 @@ class AndroidDomicView(root: ViewGroup, renderer: Renderer) : DomicView {
     override val button by lazy { AndroidButton(root.findViewById(R.id.button), renderer) }
     override val checkBox by lazy { AndroidCompoundButton(root.findViewById(R.id.checkbox), renderer) }
     override val radioButton by lazy { AndroidCompoundButton(root.findViewById(R.id.radiobutton), renderer) }
-
-    override val editText1 by lazy { AndroidEditText(root.findViewById(R.id.edittext1), renderer) }
-    override val editText2 by lazy { AndroidEditText(root.findViewById(R.id.edittext2), renderer) }
 }

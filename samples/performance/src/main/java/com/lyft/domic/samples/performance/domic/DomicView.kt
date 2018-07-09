@@ -20,7 +20,4 @@ interface DomicView {
     val button: Button
     val checkBox: CompoundButton
     val radioButton: CompoundButton
-
-    val editText1: EditText
-    val editText2: EditText
 }
