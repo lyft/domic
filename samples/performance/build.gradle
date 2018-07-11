@@ -5,7 +5,7 @@ android {
     buildToolsVersion versions.buildTools
 
     defaultConfig {
-        applicationId 'com.lyf.domic.samples.mvp'
+        applicationId 'com.lyf.domic.samples.performance'
         compileSdkVersion versions.compileSdk
         targetSdkVersion versions.targetSdk
         minSdkVersion versions.minSdk
@@ -38,16 +38,4 @@ dependencies {
     implementation libraries.rxJava
     implementation libraries.rxAndroid
     implementation libraries.rxKotlin
-    implementation libraries.rxReplayingShareKotlin
-    implementation libraries.koptionalRxJava2
-
-    implementation project(':samples:shared')
-}
-
-dependencies {
-    testImplementation project(':domic:test')
-    testImplementation testLibraries.junit
-    testImplementation testLibraries.assertJ
-    testImplementation testLibraries.kotlinMockito
-    testImplementation libraries.rxRelay
 }

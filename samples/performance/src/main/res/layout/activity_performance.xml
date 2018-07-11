@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/counter0"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Counter0: 124" />
+
+    <TextView
+        android:id="@+id/counter1"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/counter0"
+        tools:text="Counter1: 124" />
+
+    <TextView
+        android:id="@+id/counter2"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/counter0"
+        tools:text="Counter2: 124" />
+
+    <TextView
+        android:id="@+id/counter3"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/counter2"
+        app:layout_constraintTop_toBottomOf="@id/counter1"
+        tools:text="Counter3: 124" />
+
+    <TextView
+        android:id="@+id/counter4"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/counter2"
+        tools:text="Counter4: 124" />
+
+    <TextView
+        android:id="@+id/counter5"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/counter4"
+        app:layout_constraintTop_toBottomOf="@id/counter3"
+        tools:text="Counter5: 124" />
+
+    <TextView
+        android:id="@+id/counter6"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/counter4"
+        tools:text="Counter6: 124" />
+
+    <TextView
+        android:id="@+id/counter7"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/counter6"
+        app:layout_constraintTop_toBottomOf="@id/counter5"
+        tools:text="Counter7: 124" />
+
+    <TextView
+        android:id="@+id/counter8"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/counter6"
+        tools:text="Counter8: 124" />
+
+    <TextView
+        android:id="@+id/counter9"
+        style="@style/Counter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/counter8"
+        app:layout_constraintTop_toBottomOf="@id/counter7"
+        tools:text="Counter9: 124" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Button"
+        app:layout_constraintTop_toBottomOf="@id/counter8"
+        tools:ignore="HardcodedText" />
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Checkbox"
+        app:layout_constraintBaseline_toBaselineOf="@id/button"
+        app:layout_constraintLeft_toRightOf="@id/button"
+        tools:ignore="HardcodedText" />
+
+    <RadioButton
+        android:id="@+id/radiobutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RadioButton"
+        app:layout_constraintBaseline_toBaselineOf="@id/checkbox"
+        app:layout_constraintLeft_toRightOf="@id/checkbox"
+        tools:ignore="HardcodedText" />
+
+</android.support.constraint.ConstraintLayout>

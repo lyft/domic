@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Domic Performance</string>
+    <string name="button_regular_ui">Regular UI</string>
+    <string name="button_domic">Domic</string>
+</resources>

@@ -23,6 +23,7 @@ dependencies {
     implementation project(':domic:util')
     implementation libraries.rxAndroid
     implementation libraries.rxBinding
+    implementation libraries.rxReplayingShareKotlin
 }
 
 dependencies {

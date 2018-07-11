@@ -1,14 +1,14 @@
 ext.versions = [
         agp                    : '3.2.0-alpha15',
         buildTools             : '27.0.3',
-        compileSdk             : 27,
+        compileSdk             : 28,
         targetSdk              : 27,
         minSdk                 : 16,
 
         kotlin                 : '1.2.30',
         koptional              : '1.2.0',
 
-        rxJava                 : '2.1.9',
+        rxJava                 : '2.1.16',
         rxAndroid              : '2.0.1',
         rxBinding              : '2.0.0',
         rxKotlin               : '2.1.0',
@@ -38,7 +38,6 @@ ext.libraries = [
 ext.supportLibraries = [
         annotations     : "com.android.support:support-annotations:$versions.support",
         appCompat       : "com.android.support:appcompat-v7:$versions.support",
-        recyclerView    : "com.android.support:recyclerview-v7:$versions.support",
         constraintLayout: "com.android.support.constraint:constraint-layout:$versions.supportConstraintLayout",
 ]
 

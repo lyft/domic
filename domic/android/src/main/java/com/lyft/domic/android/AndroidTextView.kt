@@ -1,5 +1,8 @@
 package com.lyft.domic.android
 
+import android.os.Build
+import android.text.PrecomputedText
+import com.jakewharton.rx.replayingShare
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.lyft.domic.android.annotations.MutatedByFramework
 import com.lyft.domic.android.rendering.mapToChange
@@ -11,6 +14,7 @@ import com.lyft.domic.util.distinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import java.util.concurrent.atomic.AtomicReferenceArray
 
 class AndroidTextView(
@@ -46,10 +50,32 @@ class AndroidTextView(
 
     override val change: TextView.Change = object : TextView.Change, View.Change by asView.change {
 
-        override fun text(textValues: Observable<out CharSequence>): Disposable = textValues
-                .distinctUntilChanged(state, STATE_INDEX_TEXT)
-                .mapToChange(realTextView, STATE_INDEX_TEXT) { realTextView.text = it }
-                .subscribe(renderer::render)
+        private val textMetricsParams: Observable<android.text.PrecomputedText.Params> by lazy {
+            Observable
+                    .fromCallable {
+                        if (Build.VERSION.SDK_INT >= 28) {
+                            realTextView.textMetricsParams
+                        } else {
+                            throw IllegalStateException("PrecomputedText is not supported on API below 28.")
+                        }
+                    }
+                    .subscribeOn(mainThread())
+                    .replayingShare()
+        }
+
+        override fun text(textValues: Observable<out CharSequence>): Disposable {
+            var values: Observable<out CharSequence> = textValues
+                    .distinctUntilChanged(state, STATE_INDEX_TEXT)
+
+            if (Build.VERSION.SDK_INT >= 28) {
+                values = Observable
+                        .combineLatest(values, textMetricsParams, BiFunction { text, metrics -> PrecomputedText.create(text, metrics) })
+            }
+
+            return values
+                    .mapToChange(realTextView, STATE_INDEX_TEXT) { realTextView.text = it }
+                    .subscribe(renderer::render)
+        }
     }
 
     init {
