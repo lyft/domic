@@ -2,7 +2,6 @@ package com.lyft.domic.samples.performance.main
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.lyft.domic.android.rendering.AndroidRenderer
 import com.lyft.domic.samples.performance.PerformanceApplication
 import com.lyft.domic.samples.performance.R
 import io.reactivex.Single
@@ -30,6 +29,4 @@ class MainActivity : AppCompatActivity() {
         disposable.dispose()
         super.onDestroy()
     }
-
 }
-

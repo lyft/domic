@@ -11,8 +11,8 @@ import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 
 class AndroidMainView(private val root: ViewGroup, renderer: Renderer) : MainView {
-    override val regularUiButton by lazy { AndroidButton(root.findViewById(R.id.button_regular_ui), renderer) }
-    override val domicButton by lazy { AndroidButton(root.findViewById(R.id.button_domic), renderer) }
+    override val regularUiButton = AndroidButton(root.findViewById(R.id.button_regular_ui), renderer)
+    override val domicButton = AndroidButton(root.findViewById(R.id.button_domic), renderer)
 
     override fun navigateToRegular() = Completable
             .fromAction { root.context.startActivity(Intent(root.context, RegularActivity::class.java)) }
