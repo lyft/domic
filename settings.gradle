@@ -1,3 +1,6 @@
+// Avoid clash with domic subfolder.
+rootProject.name = 'domic-root'
+
 include ':domic:api'
 include ':domic:android'
 include ':domic:test'

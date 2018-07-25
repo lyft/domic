@@ -1,0 +1,51 @@
+apply plugin: 'maven-publish'
+
+
+publishing {
+    publications {
+        LibraryPublication(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            artifact bundleRelease
+            pom.withXml {
+                final dependencies = asNode().appendNode('dependencies')
+
+
+                ext.addDependency = { Dependency dep, String scope ->
+                    if (dep.group == null || dep.version == null || dep.name == null || dep.name == 'unspecified') return
+                    // ignore invalid dependencies
+
+
+                    final dependency = dependencies.appendNode('dependency')
+                    dependency.appendNode('groupId', dep.group)
+                    dependency.appendNode('artifactId', dep.name)
+                    dependency.appendNode('version', dep.version)
+                    dependency.appendNode('scope', scope)
+
+
+                    if (!dep.transitive) {
+                        final exclusion = dependency.appendNode('exclusions').appendNode('exclusion')
+                        exclusion.appendNode('groupId', '*')
+                        exclusion.appendNode('artifactId', '*')
+                    } else if (!dep.properties.excludeRules.empty) {
+                        final exclusion = dependency.appendNode('exclusions').appendNode('exclusion')
+                        dep.properties.excludeRules.each { ExcludeRule rule ->
+                            exclusion.appendNode('groupId', rule.group ?: '*')
+                            exclusion.appendNode('artifactId', rule.module ?: '*')
+                        }
+                    }
+                }
+
+
+                // convert gradle compile to maven compile dependencies
+                (configurations.compile.getAllDependencies() + configurations.api.getAllDependencies() +
+                        configurations.implementation.getAllDependencies())
+                        .each { dep -> addDependency(dep, "compile") }
+            }
+        }
+    }
+}
+
+
+apply from: "$rootDir/gradle/bintray.gradle"

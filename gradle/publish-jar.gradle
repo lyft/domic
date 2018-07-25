@@ -1,0 +1,16 @@
+apply plugin: 'maven-publish'
+
+
+publishing {
+    publications {
+        LibraryPublication(MavenPublication) {
+            groupId project.group
+            artifactId project.name
+            version project.version
+            from components.java
+        }
+    }
+}
+
+
+apply from: "$rootDir/gradle/bintray.gradle"

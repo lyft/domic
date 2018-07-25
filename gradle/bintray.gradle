@@ -1,0 +1,61 @@
+apply plugin: 'com.jfrog.bintray'
+
+
+bintray {
+    user = System.getenv('PUB_API_USER')
+    key = System.getenv('PUB_API_KEY')
+    pkg {
+        repo = System.getenv('PUB_REPO_NAME')
+        name = System.getenv('PUB_PACKAGE_NAME')
+        userOrg = System.getenv('PUB_SUBJECT_NAME')
+        licenses = ['Apache-2.0']
+        vcsUrl = System.getenv('PUB_VCS_URL')
+        version {
+            name = version
+        }
+    }
+    publications = ['LibraryPublication']
+    publish = true
+}
+
+
+private def validateTagAndVersionForPublishing() {
+    if (gitTag().isEmpty()) {
+        throw new IllegalStateException('Publishing is not allowed because current commit has no tag')
+    }
+
+
+    final String projectVersion = version
+
+
+    if (projectVersion == null || projectVersion.isEmpty()) {
+        throw new IllegalStateException('Publishing is not allowed because current projectVersion is null or empty')
+    }
+
+
+    def semVerComponents = projectVersion.split('\\.')
+
+
+    if (semVerComponents.length != 3) {
+        throw new IllegalStateException(
+                "Publishing is not allowed because current projectVersion " + "is not semantic, should have 3 components. projectVersion = $projectVersion")
+    }
+
+
+    for (String semVerComponent : semVerComponents) {
+        if (!semVerComponent.isInteger() || Integer.parseInt(semVerComponent) < 0) {
+            throw new IllegalStateException(
+                    "Publishing is not allowed because current projectVersion " + "is not semantic, components should be integers. projectVersion = $projectVersion")
+        }
+    }
+}
+
+
+task validatePublishing {
+    doLast {
+        validateTagAndVersionForPublishing()
+    }
+}
+
+
+bintrayUpload.dependsOn validatePublishing

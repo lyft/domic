@@ -4,6 +4,7 @@ ext.versions = [
         compileSdk             : 28,
         targetSdk              : 27,
         minSdk                 : 16,
+        bintray                : '1.8.0',
 
         kotlin                 : '1.2.51',
         koptional              : '1.2.0',
@@ -51,4 +52,5 @@ ext.testLibraries = [
 ext.gradlePlugins = [
         android: "com.android.tools.build:gradle:$versions.agp",
         kotlin : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+        bintray: "com.jfrog.bintray.gradle:gradle-bintray-plugin:$versions.bintray",
 ]
