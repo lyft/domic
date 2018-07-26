@@ -81,7 +81,7 @@ class TestView : View {
         }
 
         override fun visibility(visibilityValues: Observable<View.Visibility>): Disposable {
-            return visibilityRelay
+            return visibilityValues
                     .distinctUntilChanged(state, 5)
                     .subscribe(visibilityRelay)
         }
