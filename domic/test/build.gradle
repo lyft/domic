@@ -9,3 +9,8 @@ dependencies {
     implementation project(':domic:util')
     implementation libraries.rxRelay
 }
+
+dependencies {
+    testImplementation testLibraries.junit
+    testImplementation testLibraries.assertJ
+}
