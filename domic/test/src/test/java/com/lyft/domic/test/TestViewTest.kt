@@ -112,5 +112,48 @@ class TestViewTest {
         }
     }
 
-    
+    @Test
+    fun simulateClick() {
+        val observer = testView.observe.clicks.test()
+
+        testView.simulate.click()
+        observer.assertValueCount(1)
+
+        testView.simulate.click()
+        observer.assertValueCount(2)
+
+        observer.assertNotTerminated()
+    }
+
+    @Test
+    fun simulateFocus() {
+        val observer = testView.observe.focus.test()
+
+        testView.simulate.focus(true)
+        observer.assertValueCount(1)
+
+        testView.simulate.focus(true)
+        observer.assertValueCount(1)
+
+        testView.simulate.focus(false)
+        observer.assertValueCount(2)
+
+        testView.simulate.focus(false)
+        observer.assertValueCount(2)
+
+        observer.assertNotTerminated()
+    }
+
+    @Test
+    fun simulateLongClick() {
+        val observer = testView.observe.longClicks.test()
+
+        testView.simulate.longClick()
+        observer.assertValueCount(1)
+
+        testView.simulate.longClick()
+        observer.assertValueCount(2)
+
+        observer.assertNotTerminated()
+    }
 }
