@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -11,6 +12,8 @@
         style="@style/Counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/root"
+        app:layout_constraintTop_toTopOf="@id/root"
         tools:text="Counter0: 124" />
 
     <TextView
@@ -19,6 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toRightOf="@id/counter0"
+        app:layout_constraintTop_toTopOf="@id/root"
         tools:text="Counter1: 124" />
 
     <TextView
@@ -26,6 +30,7 @@
         style="@style/Counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/root"
         app:layout_constraintTop_toBottomOf="@id/counter0"
         tools:text="Counter2: 124" />
 
@@ -43,6 +48,7 @@
         style="@style/Counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/root"
         app:layout_constraintTop_toBottomOf="@id/counter2"
         tools:text="Counter4: 124" />
 
@@ -60,6 +66,7 @@
         style="@style/Counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/root"
         app:layout_constraintTop_toBottomOf="@id/counter4"
         tools:text="Counter6: 124" />
 
@@ -77,6 +84,7 @@
         style="@style/Counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@id/root"
         app:layout_constraintTop_toBottomOf="@id/counter6"
         tools:text="Counter8: 124" />
 
@@ -95,6 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Button"
+        app:layout_constraintLeft_toLeftOf="@id/root"
         app:layout_constraintTop_toBottomOf="@id/counter8"
         tools:ignore="HardcodedText" />
 
