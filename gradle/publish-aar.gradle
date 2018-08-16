@@ -1,16 +1,14 @@
 apply plugin: 'maven-publish'
 
-
 publishing {
     publications {
         LibraryPublication(MavenPublication) {
             groupId project.group
             artifactId project.name
             version project.version
-            artifact bundleRelease
+            artifact bundleReleaseAar
             pom.withXml {
                 final dependencies = asNode().appendNode('dependencies')
-
 
                 ext.addDependency = { Dependency dep, String scope ->
                     if (dep.group == null || dep.version == null || dep.name == null || dep.name == 'unspecified') return
@@ -36,7 +34,6 @@ publishing {
                         }
                     }
                 }
-
 
                 // convert gradle compile to maven compile dependencies
                 (configurations.compile.getAllDependencies() + configurations.api.getAllDependencies() +

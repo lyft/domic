@@ -1,6 +1,5 @@
 apply plugin: 'com.jfrog.bintray'
 
-
 bintray {
     user = System.getenv('PUB_API_USER')
     key = System.getenv('PUB_API_KEY')
@@ -18,29 +17,23 @@ bintray {
     publish = true
 }
 
-
 private def validateTagAndVersionForPublishing() {
     if (gitTag().isEmpty()) {
         throw new IllegalStateException('Publishing is not allowed because current commit has no tag')
     }
 
-
     final String projectVersion = version
-
 
     if (projectVersion == null || projectVersion.isEmpty()) {
         throw new IllegalStateException('Publishing is not allowed because current projectVersion is null or empty')
     }
 
-
     def semVerComponents = projectVersion.split('\\.')
-
 
     if (semVerComponents.length != 3) {
         throw new IllegalStateException(
                 "Publishing is not allowed because current projectVersion " + "is not semantic, should have 3 components. projectVersion = $projectVersion")
     }
-
 
     for (String semVerComponent : semVerComponents) {
         if (!semVerComponent.isInteger() || Integer.parseInt(semVerComponent) < 0) {
@@ -50,12 +43,10 @@ private def validateTagAndVersionForPublishing() {
     }
 }
 
-
 task validatePublishing {
     doLast {
         validateTagAndVersionForPublishing()
     }
 }
-
 
 bintrayUpload.dependsOn validatePublishing

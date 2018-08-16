@@ -15,19 +15,14 @@ buildscript {
     }
 }
 
-group = 'com.lyft.domic'
-version = projectVersion()
-
 allprojects {
     repositories {
         google()
         jcenter()
     }
-}
-
-subprojects {
-    group = rootProject.group
-    version = rootProject.version
+    
+    group = 'com.lyft.domic'
+    version = projectVersion()
 }
 
 private def gitTag() {
