@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
 /**
  * It is expected for the application to maintain a singleton of [AndroidRenderer]
  * to optimize resource consumption.
+ *
+ * @see <a href="https://source.android.com/devices/graphics/arch-gameloops">Android Architecture: Game loops</a>
  */
 class AndroidRenderer(
         private val choreographer: Choreographer = Choreographer.getInstance(),
