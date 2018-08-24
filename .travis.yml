@@ -24,8 +24,3 @@ cache:
 
 notifications:
   email: false
-
-addons:
-  artifacts:
-    paths:
-      - domic/android/build/reports/tests/testDebugUnitTest/index.html
