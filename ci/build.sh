@@ -7,4 +7,4 @@ PROJECT_DIR="$DIR/.."
 
 pushd "$PROJECT_DIR" > /dev/null
 
-./gradlew build --stacktrace
+./gradlew build testDebug --stacktrace
