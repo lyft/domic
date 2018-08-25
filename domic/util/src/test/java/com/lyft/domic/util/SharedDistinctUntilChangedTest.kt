@@ -6,7 +6,7 @@ import org.junit.Test
 import java.lang.Exception
 import java.util.concurrent.atomic.AtomicReferenceArray
 
-class DistinctUntilChangedTest {
+class SharedDistinctUntilChangedTest {
 
     @Test
     fun sharedDistinctUntilChangedEmitsDistinctValues() {

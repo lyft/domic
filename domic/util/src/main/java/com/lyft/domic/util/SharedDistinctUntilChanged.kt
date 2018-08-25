@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray
 
 /**
  * Similar to standard [Observable.distinctUntilChanged] but operates on shared atomic state
- * thus letting Domic handle multiple rx streams consistently updating same property.
+ * thus letting Domic handle multiple rx streams updating same property in a consistent manner.
  *
  * @param sharedState atomic reference array that is used as source of current state when comparison happens.
  * @param stateIndex index of the item in the array that needs to be used to get current state when comparison happens.
@@ -18,7 +18,9 @@ import java.util.concurrent.atomic.AtomicReferenceArray
 fun <T> Observable<T>.sharedDistinctUntilChanged(sharedState: AtomicReferenceArray<Any>, stateIndex: Int): Observable<T> = RxJavaPlugins
         .onAssembly(ObservableSharedDistinctUntilChanged(this, sharedState, stateIndex))
 
-// TODO implement Operator Fusion, looks like required interfaces are internal in RxJava :(
+// Operator fusion is not implemented for several reasons:
+// - Required interfaces are internal in RxJava.
+// - For Observable, it matters only for queue sharing which we don't have in Domic flows.
 internal class ObservableSharedDistinctUntilChanged<T>(
         private val source: ObservableSource<T>,
         private val sharedState: AtomicReferenceArray<Any>,
@@ -36,7 +38,7 @@ internal class ObservableSharedDistinctUntilChanged<T>(
     ) : Observer<T>, Disposable {
 
         private var upstream: Disposable? = null
-        var done: Boolean = false
+        private var done: Boolean = false
 
         override fun onSubscribe(disposable: Disposable) {
             if (validateDisposable(upstream, disposable)) {
