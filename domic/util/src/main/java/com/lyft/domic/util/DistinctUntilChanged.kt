@@ -29,7 +29,7 @@ internal class ObservableSharedDistinctUntilChanged<T>(
         source.subscribe(SharedDistinctUntilChangedObserver(actual, sharedState, stateIndex))
     }
 
-    inner class SharedDistinctUntilChangedObserver<T>(
+    class SharedDistinctUntilChangedObserver<T>(
             private val actual: Observer<in T>,
             private val sharedState: AtomicReferenceArray<Any>,
             private val stateIndex: Int
