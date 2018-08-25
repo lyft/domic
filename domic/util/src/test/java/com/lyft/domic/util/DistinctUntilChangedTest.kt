@@ -12,7 +12,7 @@ class DistinctUntilChangedTest {
 
         Observable
                 .fromArray("a", "b")
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .test()
                 .assertResult("a", "b")
     }
@@ -23,7 +23,7 @@ class DistinctUntilChangedTest {
 
         Observable
                 .fromArray("a", "a")
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .test()
                 .assertResult("a")
     }
@@ -34,19 +34,19 @@ class DistinctUntilChangedTest {
 
         Observable
                 .just("a")
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .test()
                 .assertResult("a")
 
         Observable
                 .just("a")
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .test()
                 .assertResult()
 
         Observable
                 .just("b")
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .test()
                 .assertResult("b")
     }
