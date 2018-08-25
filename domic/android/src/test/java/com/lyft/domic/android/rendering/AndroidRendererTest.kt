@@ -1,156 +1,137 @@
 package com.lyft.domic.android.rendering
 
-import android.view.Choreographer
 import com.lyft.domic.api.rendering.Change
 import com.lyft.domic.api.rendering.Renderer
 import com.nhaarman.mockito_kotlin.*
 import io.reactivex.Observable
 import io.reactivex.schedulers.TestScheduler
+import io.reactivex.subjects.PublishSubject
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Assert.fail
 import org.junit.Test
 import java.util.concurrent.Callable
-import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.atomic.AtomicBoolean
 
 class AndroidRendererTest {
 
-    private val choreographer = mock<Choreographer>()
+    private val choreographer = TestChoreographer()
     private val timeScheduler = TestScheduler()
-    private val bufferTimeWindow = 8L
     private val mainThreadChecker = mock<Callable<Boolean>>()
     private val renderer: Renderer = AndroidRenderer(
-            choreographer,
+            choreographer.choreographer,
             timeScheduler,
-            bufferTimeWindow,
             RenderingBufferImpl(),
             mainThreadChecker
     )
     private val changes = listOf<Change>(mock(), mock(), mock(), mock())
 
     @Test
-    fun postsChangesToChoreographer() {
-        whenever(choreographer.postFrameCallback(any())).then { invocation ->
-            (invocation.arguments[0] as Choreographer.FrameCallback)
-                    .doFrame(0)
-        }
+    fun postsToChoreographerByDefault() {
+        assertThat(choreographer.callbacksCount()).isEqualTo(1)
+    }
 
+    @Test
+    fun postsItselfToChoreographerAgain() {
+        choreographer.simulateCallbacksCall()
+        assertThat(choreographer.callbacksCount()).isEqualTo(1)
+    }
+
+    @Test
+    fun rendersChangesOnlyWhenChoreographerSignals() {
         renderer.render(Observable.fromIterable(changes))
+        changes.forEach { verifyZeroInteractions(it) }
 
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-
+        choreographer.simulateCallbacksCall()
         changes.forEach { change -> verify(change).perform() }
     }
 
     @Test
-    fun buffersChangesInSingleChoreographerCallWithinTimeWindow() {
+    fun rendersChangesPostedAsIndividualObservablesOnlyWhenChoreographerSignals() {
         changes.forEach { change -> renderer.render(Observable.just(change)) }
+        changes.forEach { verifyZeroInteractions(it) }
 
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-
-        // Only one aggregated call to Choreographer is expected.
-        verify(choreographer, times(1)).postFrameCallback(any())
+        choreographer.simulateCallbacksCall()
+        changes.forEach { change -> verify(change).perform() }
     }
 
     @Test
-    fun executesChangesBufferedInSingleChoreographerCallWithinTimeWindow() {
-        whenever(choreographer.postFrameCallback(any())).then { invocation ->
-            (invocation.arguments[0] as Choreographer.FrameCallback)
-                    .doFrame(0)
-        }
+    fun changePostedAfterChoreographerSignalWaitsForNextSignal() {
+        val change1 = changes[0]
+        val change2 = changes[1]
 
-        changes.forEach { change -> renderer.render(Observable.just(change)) }
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        val changes = PublishSubject.create<Change>()
 
-        changes.forEach { change -> verify(change, times(1)).perform() }
-    }
+        renderer.render(changes)
 
-    @Test
-    fun changeCrossedBufferTimeWindowCausesSeparateChoreographerCall() {
-        changes.forEach { change ->
-            renderer.render(Observable.just(change))
-            timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-        }
-
-        verify(choreographer, times(changes.size)).postFrameCallback(any())
-    }
-
-    @Test
-    fun doesNotExecuteOldChangesAgain() {
-        whenever(choreographer.postFrameCallback(any())).then { invocation ->
-            (invocation.arguments[0] as Choreographer.FrameCallback)
-                    .doFrame(0)
-        }
-
-        val change1 = mock<Change>()
-        renderer.render(Observable.just(change1))
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-
+        changes.onNext(change1)
+        verifyZeroInteractions(change1)
+        choreographer.simulateCallbacksCall()
         verify(change1).perform()
 
-        val change2 = mock<Change>()
-        renderer.render(Observable.just(change2))
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        changes.onNext(change2)
+        verifyZeroInteractions(change2)
+        choreographer.simulateCallbacksCall()
+        verify(change2).perform()
+    }
 
-        verifyNoMoreInteractions(change1)
+    @Test
+    fun doesNotPerformOldChangesAgain() {
+        val change1 = changes[0]
+        val change2 = changes[1]
+
+        val changes = PublishSubject.create<Change>()
+
+        renderer.render(changes)
+
+        changes.onNext(change1)
+        verifyZeroInteractions(change1)
+        choreographer.simulateCallbacksCall()
         verify(change1).perform()
+
+        changes.onNext(change2)
+        verifyZeroInteractions(change2)
+        choreographer.simulateCallbacksCall()
+        verify(change2).perform()
+
+        verifyNoMoreInteractions(change1, change2)
     }
 
     @Test
-    fun changesAreNotExecutedWithoutChoreographerCallback() {
-        changes.forEach { change -> renderer.render(Observable.just(change)) }
-
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-
-        changes.forEach { change -> verify(change, never()).perform() }
-    }
-
-    @Test
-    fun equalChangesInSameStreamAreDebouncedWithinBufferTimeWindow() {
-        whenever(choreographer.postFrameCallback(any())).then { invocation ->
-            (invocation.arguments[0] as Choreographer.FrameCallback)
-                    .doFrame(0)
-        }
-
-        val change1 = TestChange("a")
-        val change2 = TestChange("a")
+    fun equalChangesInSameObservablesAreDebouncedWithinChoreographerSignals() {
+        val change1 = TestChange(id = "a")
+        val change2 = TestChange(id = "a")
 
         renderer.render(Observable.fromIterable(listOf(change1, change2)))
 
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        choreographer.simulateCallbacksCall()
 
         assertThat(change1.performed).isFalse()
         assertThat(change2.performed).isTrue()
     }
 
     @Test
-    fun equalChangesInDifferentStreamsAreDebouncedWithinBufferTimeWindow() {
-        whenever(choreographer.postFrameCallback(any())).then { invocation ->
-            (invocation.arguments[0] as Choreographer.FrameCallback)
-                    .doFrame(0)
-        }
-
+    fun equalChangesInDifferentObservablesAreDebouncedWithinBufferTimeWindow() {
         val change1 = TestChange("a")
         val change2 = TestChange("a")
 
         renderer.render(Observable.just(change1))
         renderer.render(Observable.just(change2))
 
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        choreographer.simulateCallbacksCall()
 
         assertThat(change1.performed).isFalse()
         assertThat(change2.performed).isTrue()
     }
 
     @Test
-    fun changeStreamDisposeRemovesChangesFromBuffer() {
+    fun disposingRenderingCallRemovesChangesFromBuffer() {
         val disposable = renderer.render(Observable.fromIterable(changes))
 
         disposable.dispose()
 
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
+        choreographer.simulateCallbacksCall()
 
-        verify(choreographer, never()).postFrameCallback(any())
+        changes.forEach { verifyZeroInteractions(it) }
     }
 
     @Test
@@ -179,15 +160,12 @@ class AndroidRendererTest {
     }
 
     @Test
-    fun shutdownStopsPostingToChoreographer() {
+    fun shutdownStopsReactToChoreographerSignals() {
         renderer.render(Observable.fromIterable(changes))
         renderer.shutdown()
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-        verify(choreographer, never()).postFrameCallback(any())
 
-        renderer.render(Observable.just(mock()))
-        timeScheduler.advanceTimeBy(bufferTimeWindow, MILLISECONDS)
-        verify(choreographer, never()).postFrameCallback(any())
+        choreographer.simulateCallbacksCall()
+        changes.forEach { verifyZeroInteractions(it) }
     }
 
     class TestChange(private val id: Any) : Change {

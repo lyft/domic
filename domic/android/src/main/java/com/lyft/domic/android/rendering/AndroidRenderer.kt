@@ -9,11 +9,11 @@ import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 import java.util.concurrent.Callable
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.TimeUnit.MILLISECONDS
 
 /**
  * It is expected for the application to maintain a singleton of [AndroidRenderer]
@@ -21,8 +21,7 @@ import java.util.concurrent.TimeUnit.MILLISECONDS
  */
 class AndroidRenderer(
         private val choreographer: Choreographer = Choreographer.getInstance(),
-        private val timeScheduler: Scheduler = Schedulers.computation(),
-        bufferTimeWindowMs: Long = 8, // We'll adjust if needed.
+        private val computationScheduler: Scheduler = Schedulers.computation(),
         private val buffer: RenderingBuffer<Change> = RenderingBufferImpl(),
         private val mainThreadChecker: Callable<Boolean> = Callable { Looper.myLooper() == Looper.getMainLooper() }
 ) : Renderer {
@@ -31,14 +30,34 @@ class AndroidRenderer(
     private val disposable: Disposable
 
     init {
-        disposable = Observable
-                .interval(0, bufferTimeWindowMs, MILLISECONDS, timeScheduler)
-                .filter { buffer.isEmpty() == false }
+        val frameSignal = PublishSubject.create<Unit>()
+
+        val frameCallback = object : Choreographer.FrameCallback {
+            override fun doFrame(frameTimeNanos: Long) {
+                frameSignal.onNext(Unit)
+
+                // Async loop.
+                choreographer.postFrameCallback(this)
+
+                // TODO: Detect foreground state and remove callback if app is in background?
+                // Pros:
+                //      - Domic won't do anything on its own while app is in background.
+                // Cons:
+                //      - Changes pushed to the Renderer will be buffered in memory
+                //        which can lead to OOM in background.
+                //        Android Framework normally renders UI in memory,
+                //        effectively keeping only current state in memory.
+            }
+        }
+
+        choreographer.postFrameCallback(frameCallback)
+
+        disposable = frameSignal
+                .filter { !buffer.isEmpty() }
                 .map { buffer.getAndSwap() }
+                .doOnDispose { choreographer.removeFrameCallback(frameCallback) }
                 .subscribe { bufferToRender ->
-                    choreographer.postFrameCallback {
-                        renderBuffer(bufferToRender)
-                    }
+                    renderBuffer(bufferToRender)
                 }
     }
 
@@ -46,7 +65,7 @@ class AndroidRenderer(
         bufferToRender.forEach { change -> change.perform() }
 
         // Make sure we don't synchronize on Main Thread.
-        timeScheduler.scheduleDirect {
+        computationScheduler.scheduleDirect {
             streamDisposables.forEach { streamDisposable ->
                 bufferToRender.forEach { change -> streamDisposable.releaseChange(change) }
             }

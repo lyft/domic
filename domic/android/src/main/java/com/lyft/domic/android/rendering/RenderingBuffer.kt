@@ -21,7 +21,7 @@ interface RenderingBuffer<T> {
 
     /**
      * Atomically swaps *current* underlying buffer with another and returns the one that was
-     * *current* before swap.
+     * *current* before the swap.
      *
      * Subsequent reads and writes on this [RenderingBuffer] will work against another buffer
      * until it's swapped.
