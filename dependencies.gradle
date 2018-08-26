@@ -14,6 +14,7 @@ ext.versions = [
         rxKotlin               : '2.1.0',
         rxRelay                : '2.0.0',
         rxReplayingShare       : '2.0.1',
+        rxRedux                : '1.0.0',
 
         support                : '27.1.1',
         supportConstraintLayout: '1.0.2',
@@ -46,6 +47,10 @@ ext.testLibraries = [
         kotlinMockito: "com.nhaarman:mockito-kotlin:$versions.kotlinMockito",
         kotlinReflect: "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin",
         assertJ      : "org.assertj:assertj-core:$versions.assertJ",
+]
+
+ext.sampleLibraries = [
+        rxRedux: "com.freeletics.rxredux:rxredux:$versions.rxRedux",
 ]
 
 ext.gradlePlugins = [
