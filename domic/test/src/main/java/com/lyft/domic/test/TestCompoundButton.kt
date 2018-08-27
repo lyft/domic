@@ -2,7 +2,7 @@ package com.lyft.domic.test
 
 import com.lyft.domic.api.Button
 import com.lyft.domic.api.CompoundButton
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicReferenceArray
@@ -30,7 +30,7 @@ class TestCompoundButton : CompoundButton {
         private val state = AtomicReferenceArray<Any>(1)
 
         override fun checked(checkedValues: Observable<Boolean>): Disposable = checkedValues
-                .distinctUntilChanged(state, 0)
+                .sharedDistinctUntilChanged(state, 0)
                 .subscribe(checkedRelay)
     }
 

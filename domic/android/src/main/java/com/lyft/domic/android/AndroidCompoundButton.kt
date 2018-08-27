@@ -7,7 +7,7 @@ import com.lyft.domic.api.Button
 import com.lyft.domic.api.CompoundButton
 import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
@@ -39,7 +39,7 @@ class AndroidCompoundButton(
     override val change: CompoundButton.Change = object : CompoundButton.Change, Button.Change by asButton.change {
 
         override fun checked(checkedValues: Observable<Boolean>): Disposable = checkedValues
-                .distinctUntilChanged(state, STATE_INDEX_CHECKED)
+                .sharedDistinctUntilChanged(state, STATE_INDEX_CHECKED)
                 .mapToChange(realCompoundButton, STATE_INDEX_CHECKED) { realCompoundButton.isChecked = it }
                 .subscribe(renderer::render)
     }

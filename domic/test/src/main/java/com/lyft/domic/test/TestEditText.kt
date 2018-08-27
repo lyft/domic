@@ -2,7 +2,7 @@ package com.lyft.domic.test
 
 import com.lyft.domic.api.EditText
 import com.lyft.domic.api.TextView
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -34,7 +34,7 @@ class TestEditText : EditText {
 
         override fun selection(selectionValues: Observable<Int>): Disposable =
                 selectionValues
-                        .distinctUntilChanged(state, 0)
+                        .sharedDistinctUntilChanged(state, 0)
                         .subscribe(selectionRelay)
     }
 
