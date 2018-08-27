@@ -10,7 +10,7 @@ import com.lyft.domic.api.TextView
 import com.lyft.domic.api.View
 import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
@@ -65,7 +65,7 @@ class AndroidTextView(
 
         override fun text(textValues: Observable<out CharSequence>): Disposable {
             var values: Observable<out CharSequence> = textValues
-                    .distinctUntilChanged(state, STATE_INDEX_TEXT)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_TEXT)
 
             if (Build.VERSION.SDK_INT >= 28) {
                 values = Observable

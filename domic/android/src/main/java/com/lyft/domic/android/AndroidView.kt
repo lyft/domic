@@ -5,7 +5,7 @@ import com.lyft.domic.android.rendering.mapToChange
 import com.lyft.domic.api.View
 import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.disposables.Disposable
@@ -55,42 +55,42 @@ class AndroidView(
 
         override fun activated(activatedValues: Observable<Boolean>): Disposable {
             return activatedValues
-                    .distinctUntilChanged(state, STATE_INDEX_ACTIVATED)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_ACTIVATED)
                     .mapToChange(realView, STATE_INDEX_ACTIVATED) { realView.isActivated = it }
                     .subscribe(renderer::render)
         }
 
         override fun alpha(alphaValues: Observable<Float>): Disposable {
             return alphaValues
-                    .distinctUntilChanged(state, STATE_INDEX_ALPHA)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_ALPHA)
                     .mapToChange(realView, STATE_INDEX_ALPHA) { realView.alpha = it }
                     .subscribe(renderer::render)
         }
 
         override fun enabled(enabledValues: Observable<Boolean>): Disposable {
             return enabledValues
-                    .distinctUntilChanged(state, STATE_INDEX_ENABLED)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_ENABLED)
                     .mapToChange(realView, STATE_INDEX_ENABLED) { realView.isEnabled = it }
                     .subscribe(renderer::render)
         }
 
         override fun focusable(focusableValues: Observable<Boolean>): Disposable {
             return focusableValues
-                    .distinctUntilChanged(state, STATE_INDEX_FOCUSABLE)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_FOCUSABLE)
                     .mapToChange(realView, STATE_INDEX_FOCUSABLE) { realView.isFocusable = it }
                     .subscribe(renderer::render)
         }
 
         override fun focusableInTouchMode(focusableInTouchModeValues: Observable<Boolean>): Disposable {
             return focusableInTouchModeValues
-                    .distinctUntilChanged(state, STATE_INDEX_FOCUSABLE_IN_TOUCH_MODE)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_FOCUSABLE_IN_TOUCH_MODE)
                     .mapToChange(realView, STATE_INDEX_FOCUSABLE_IN_TOUCH_MODE) { realView.isFocusableInTouchMode = it }
                     .subscribe(renderer::render)
         }
 
         override fun visibility(visibilityValues: Observable<View.Visibility>): Disposable {
             return visibilityValues
-                    .distinctUntilChanged(state, STATE_INDEX_VISIBLE)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_VISIBLE)
                     .mapToChange(realView, STATE_INDEX_VISIBLE) {
                         @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
                         realView.visibility = when (it) {

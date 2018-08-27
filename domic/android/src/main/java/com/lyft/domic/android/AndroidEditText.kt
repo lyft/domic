@@ -5,7 +5,7 @@ import com.lyft.domic.api.EditText
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicReferenceArray
@@ -30,7 +30,7 @@ class AndroidEditText(
 
         override fun selection(selectionValues: Observable<Int>): Disposable {
             return selectionValues
-                    .distinctUntilChanged(state, STATE_INDEX_SELECTION)
+                    .sharedDistinctUntilChanged(state, STATE_INDEX_SELECTION)
                     .mapToChange(realEditText, STATE_INDEX_SELECTION) { realEditText.setSelection(it) }
                     .subscribe(renderer::render)
         }

@@ -2,7 +2,7 @@ package com.lyft.domic.test
 
 import com.lyft.domic.api.TextView
 import com.lyft.domic.api.View
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicReferenceArray
@@ -37,7 +37,7 @@ class TestTextView : TextView {
 
         override fun text(textValues: Observable<out CharSequence>): Disposable {
             return textValues
-                    .distinctUntilChanged(state, 0)
+                    .sharedDistinctUntilChanged(state, 0)
                     .subscribe { text ->
                         textChangesRelay.accept(text)
                         textChangeEventsRelay.accept(Any())

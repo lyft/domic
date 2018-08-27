@@ -1,7 +1,7 @@
 package com.lyft.domic.test
 
 import com.lyft.domic.api.View
-import com.lyft.domic.util.distinctUntilChanged
+import com.lyft.domic.util.sharedDistinctUntilChanged
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import java.util.concurrent.atomic.AtomicReferenceArray
@@ -52,37 +52,37 @@ class TestView : View {
 
         override fun activated(activatedValues: Observable<Boolean>): Disposable {
             return activatedValues
-                    .distinctUntilChanged(state, 0)
+                    .sharedDistinctUntilChanged(state, 0)
                     .subscribe(activatedRelay)
         }
 
         override fun alpha(alphaValues: Observable<Float>): Disposable {
             return alphaValues
-                    .distinctUntilChanged(state, 1)
+                    .sharedDistinctUntilChanged(state, 1)
                     .subscribe(alphaRelay)
         }
 
         override fun enabled(enabledValues: Observable<Boolean>): Disposable {
             return enabledValues
-                    .distinctUntilChanged(state, 2)
+                    .sharedDistinctUntilChanged(state, 2)
                     .subscribe(enabledRelay)
         }
 
         override fun focusable(focusableValues: Observable<Boolean>): Disposable {
             return focusableValues
-                    .distinctUntilChanged(state, 3)
+                    .sharedDistinctUntilChanged(state, 3)
                     .subscribe(focusableRelay)
         }
 
         override fun focusableInTouchMode(focusableInTouchModeValues: Observable<Boolean>): Disposable {
             return focusableInTouchModeValues
-                    .distinctUntilChanged(state, 4)
+                    .sharedDistinctUntilChanged(state, 4)
                     .subscribe(focusableInTouchModeRelay)
         }
 
         override fun visibility(visibilityValues: Observable<View.Visibility>): Disposable {
             return visibilityValues
-                    .distinctUntilChanged(state, 5)
+                    .sharedDistinctUntilChanged(state, 5)
                     .subscribe(visibilityRelay)
         }
     }
