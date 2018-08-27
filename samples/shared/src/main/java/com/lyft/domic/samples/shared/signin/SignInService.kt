@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 interface SignInService {
 
-    data class Credentials(val email: String, val password: String)
+    data class Credentials(val email: CharSequence, val password: CharSequence)
 
     sealed class SignInResult {
         object Success : SignInResult()

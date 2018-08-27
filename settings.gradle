@@ -4,6 +4,7 @@ include ':domic:test'
 include ':domic:util'
 
 include ':samples:mvvm'
+include ':samples:redux:rxredux'
 include ':samples:mvp'
 include ':samples:performance'
 include ':samples:shared'
