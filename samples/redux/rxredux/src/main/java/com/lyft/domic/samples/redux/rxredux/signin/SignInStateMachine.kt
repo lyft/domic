@@ -8,61 +8,103 @@ import io.reactivex.Scheduler
 import io.reactivex.rxkotlin.ofType
 
 class SignInStateMachine(
-        inputActions: Observable<SignInAction>,
+        inputActions: Observable<Action>,
         private val signInService: SignInService,
         computationScheduler: Scheduler
 ) {
 
-    val state: Observable<SignInState> = inputActions
+    sealed class Action {
+        data class ChangeEmail(val email: CharSequence) : Action()
+        data class ChangePassword(val password: CharSequence) : Action()
+        object SignIn : Action()
+        object SigningIn : Action()
+        object SignInSuccessful : Action()
+        data class SignInFailed(val cause: Throwable) : Action()
+    }
+
+    sealed class State {
+
+        abstract val email: CharSequence
+        abstract val password: CharSequence
+        abstract val signInButtonEnabled: Boolean
+
+        data class Idle(
+                override val email: CharSequence,
+                override val password: CharSequence,
+                override val signInButtonEnabled: Boolean
+        ) : State()
+
+        data class SigningIn(
+                override val email: CharSequence,
+                override val password: CharSequence,
+                override val signInButtonEnabled: Boolean
+        ) : State()
+
+        data class SignInSuccessful(
+                override val email: CharSequence,
+                override val password: CharSequence,
+                override val signInButtonEnabled: Boolean
+        ) : State()
+
+        data class SignInFailed(
+                override val email: CharSequence,
+                override val password: CharSequence,
+                override val signInButtonEnabled: Boolean,
+                val cause: Throwable
+        ) : State()
+    }
+
+
+    val state: Observable<State> = inputActions
             .observeOn(computationScheduler)
             .reduxStore(
-                    initialState = SignInState.Idle(email = "", password = "", signInButtonEnabled = false),
+                    initialState = State.Idle(email = "", password = "", signInButtonEnabled = false),
                     sideEffects = listOf(::signInSideEffect),
                     reducer = ::reducer
             )
             .distinctUntilChanged()
 
-    private fun reducer(state: SignInState, action: SignInAction): SignInState = when (action) {
-        is SignInAction.ChangeEmail -> {
+    private fun reducer(state: State, action: Action): State = when (action) {
+        is Action.ChangeEmail -> {
             val email = action.email.trim()
             val password = state.password
 
             val signInButtonEnabled = validateEmailAndPassword(email, password)
 
-            SignInState.Idle(
+            State.Idle(
                     email = email,
                     password = password,
                     signInButtonEnabled = signInButtonEnabled
             )
         }
-        is SignInAction.ChangePassword -> {
+        is Action.ChangePassword -> {
             val email = state.email
             val password = action.password.trim()
 
             val signInButtonEnabled = validateEmailAndPassword(email, password)
 
-            SignInState.Idle(
+            State.Idle(
                     email = state.email,
                     password = action.password,
                     signInButtonEnabled = signInButtonEnabled
             )
         }
-        is SignInAction.SignIn -> SignInState.SigningIn(
+        is Action.SignIn -> State.SigningIn(
                 email = state.email,
                 password = state.password,
                 signInButtonEnabled = false
         )
-        is SignInAction.ShowSigningInUi -> SignInState.SigningIn(
+        is Action.SigningIn -> State.SigningIn(
                 email = state.email,
                 password = state.password,
                 signInButtonEnabled = false
         )
-        is SignInAction.ShowSignInSuccessfulUi -> SignInState.SignInSuccessful(
+        is Action.SignInSuccessful -> State.SignInSuccessful(
                 email = state.email,
                 password = state.password,
                 signInButtonEnabled = true
         )
-        is SignInAction.ShowSignInFailureUi -> SignInState.SignInFailed(
+        is Action.SignInFailed -> State.SignInFailed(
                 email = state.email,
                 password = state.password,
                 cause = action.cause,
@@ -72,8 +114,8 @@ class SignInStateMachine(
 
     private fun validateEmailAndPassword(email: CharSequence, password: CharSequence): Boolean = email.isNotEmpty() && password.isNotEmpty()
 
-    private fun signInSideEffect(actions: Observable<SignInAction>, state: StateAccessor<SignInState>): Observable<SignInAction> = actions
-            .ofType<SignInAction.SignIn>()
+    private fun signInSideEffect(actions: Observable<Action>, state: StateAccessor<State>): Observable<Action> = actions
+            .ofType<Action.SignIn>()
             .map { state() }
             .map { SignInService.Credentials(email = it.email, password = it.password) }
             .switchMap { credentials ->
@@ -81,11 +123,10 @@ class SignInStateMachine(
                         .signIn(credentials)
                         .map { result ->
                             when (result) {
-                                is SignInService.SignInResult.Success -> SignInAction.ShowSignInSuccessfulUi
-                                is SignInService.SignInResult.Error -> SignInAction.ShowSignInFailureUi(result.cause)
+                                is SignInService.SignInResult.Success -> Action.SignInSuccessful
+                                is SignInService.SignInResult.Error -> Action.SignInFailed(result.cause)
                             }
                         }
-                        .startWith(SignInAction.ShowSigningInUi)
             }
 
 

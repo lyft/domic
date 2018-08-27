@@ -2,13 +2,14 @@ package com.lyft.domic.samples.redux.rxredux.signin
 
 import android.view.ViewGroup
 import com.jakewharton.rx.replayingShare
-import com.jakewharton.rxrelay2.PublishRelay
 import com.lyft.domic.android.AndroidButton
 import com.lyft.domic.android.AndroidEditText
 import com.lyft.domic.android.AndroidTextView
 import com.lyft.domic.api.rendering.Renderer
 import com.lyft.domic.api.subscribe
 import com.lyft.domic.samples.redux.rxredux.R
+import com.lyft.domic.samples.redux.rxredux.signin.SignInStateMachine.Action
+import com.lyft.domic.samples.redux.rxredux.signin.SignInStateMachine.State
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -22,32 +23,28 @@ class AndroidSignInView(root: ViewGroup, renderer: Renderer) : SignInView {
     private val signInButton = AndroidButton(root.findViewById(R.id.sign_in_button), renderer)
     private val resultTextView = AndroidTextView(root.findViewById(R.id.sign_result_text_view), renderer)
 
-    override val actions: Observable<SignInAction> = Observable
-            .create<SignInAction> { emitter ->
-                val disposable = CompositeDisposable()
-                emitter.setDisposable(disposable)
-
-                disposable += emailEditText
-                        .observe
-                        .textChanges
-                        .map { SignInAction.ChangeEmail(it) }
-                        .subscribe { emitter.onNext(it) }
-
-                disposable += passwordEditText
-                        .observe
-                        .textChanges
-                        .map { SignInAction.ChangePassword(it) }
-                        .subscribe { emitter.onNext(it) }
-
-                disposable += signInButton
-                        .observe
-                        .clicks
-                        .map { SignInAction.SignIn }
-                        .subscribe { emitter.onNext(it) }
-            }
+    override val actions: Observable<Action> = Observable
+            .merge(
+                    emailEditText
+                            .observe
+                            .textChanges
+                            .map { Action.ChangeEmail(it) },
+                    emailEditText
+                            .observe
+                            .textChanges
+                            .map { Action.ChangeEmail(it) },
+                    passwordEditText
+                            .observe
+                            .textChanges
+                            .map { Action.ChangePassword(it) },
+                    signInButton
+                            .observe
+                            .clicks
+                            .map { Action.SignIn }
+            )
             .share()
 
-    override fun render(signInState: Observable<SignInState>): Disposable {
+    override fun render(signInState: Observable<State>): Disposable {
         val state = signInState
                 .replayingShare()
                 .observeOn(Schedulers.computation())
@@ -61,10 +58,10 @@ class AndroidSignInView(root: ViewGroup, renderer: Renderer) : SignInView {
         disposable += state
                 .map {
                     when (it) {
-                        is SignInState.Idle -> ""
-                        is SignInState.SigningIn -> "Signing in…"
-                        is SignInState.SignInSuccessful -> "Successfully signed in!"
-                        is SignInState.SignInFailed -> "Couldn't sign in because ${it.cause.message}"
+                        is State.Idle -> ""
+                        is State.SigningIn -> "Signing in…"
+                        is State.SignInSuccessful -> "Successfully signed in!"
+                        is State.SignInFailed -> "Couldn't sign in because ${it.cause.message}"
                     }
                 }
                 .subscribe(resultTextView.change::text)
