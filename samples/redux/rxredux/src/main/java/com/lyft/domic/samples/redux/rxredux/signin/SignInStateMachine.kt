@@ -89,12 +89,7 @@ class SignInStateMachine(
                     signInButtonEnabled = signInButtonEnabled
             )
         }
-        is Action.SignIn -> State.SigningIn(
-                email = state.email,
-                password = state.password,
-                signInButtonEnabled = false
-        )
-        is Action.SigningIn -> State.SigningIn(
+        is Action.SignIn, is Action.SigningIn -> State.SigningIn(
                 email = state.email,
                 password = state.password,
                 signInButtonEnabled = false
@@ -128,6 +123,4 @@ class SignInStateMachine(
                             }
                         }
             }
-
-
 }

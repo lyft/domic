@@ -29,10 +29,6 @@ class AndroidSignInView(root: ViewGroup, renderer: Renderer) : SignInView {
                             .observe
                             .textChanges
                             .map { Action.ChangeEmail(it) },
-                    emailEditText
-                            .observe
-                            .textChanges
-                            .map { Action.ChangeEmail(it) },
                     passwordEditText
                             .observe
                             .textChanges
