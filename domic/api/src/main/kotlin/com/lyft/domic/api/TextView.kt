@@ -10,6 +10,8 @@ interface TextView : View {
 
     interface Observe : View.Observe {
         val textChanges: Observable<out CharSequence>
+
+        // TODO: delete, suggest to map [textChanges] to [Unit].
         val textChangeEvents: Observable<Any>
     }
 

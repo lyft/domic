@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        applicationId 'com.lyf.domic.samples.redux.rxredux'
+        compileSdkVersion versions.compileSdk
+        targetSdkVersion versions.targetSdk
+        minSdkVersion versions.minSdk
+        versionCode 1
+        versionName '0.0.1'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+    }
+}
+
+// See `dependencies.gradle`.
+dependencies {
+    implementation project(':domic:api')
+    implementation project(':domic:android')
+
+    implementation libraries.kotlinStdlib
+
+    implementation supportLibraries.appCompat
+    implementation supportLibraries.constraintLayout
+
+    implementation libraries.rxJava
+    implementation libraries.rxAndroid
+    implementation libraries.rxKotlin
+    implementation libraries.rxReplayingShareKotlin
+    implementation libraries.koptionalRxJava2
+    implementation sampleLibraries.rxRedux
+
+    implementation project(':samples:shared')
+}
+
+dependencies {
+    testImplementation project(':domic:test')
+    testImplementation testLibraries.junit
+    testImplementation testLibraries.assertJ
+    testImplementation testLibraries.kotlinMockito
+    testImplementation libraries.rxRelay
+}

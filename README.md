@@ -46,10 +46,9 @@ It allows you:
     - [Performance](#performance)
     - [Multiplatform](#multiplatform)
 - [Integrating with Existing Projects](#integrating-with-existing-projects)
-    - [MVP](#integrating-with-mvp)
     - [MVVM](#integrating-with-mvvm)
-    - [MVI](#integrating-with-mvi)
     - [Redux](#integrating-with-redux)
+    - [MVP](#integrating-with-mvp)
 - [Alternatives](#alternatives)
 - [Terminology](#terminology)
 - [Credits](#credits)
@@ -235,7 +234,9 @@ TODO
 
 ## Integrating with Existing Projects
 
-TODO
+### Integrating with Redux
+
+See [samples/redux](samples/redux)
 
 ## Alternatives
 
