@@ -19,7 +19,7 @@ internal abstract class AndroidChange(private val obj: Any, private val property
     override fun toString() = "AndroidChange(obj = ${obj.javaClass}(${obj.hashCode()}), propertyId = $propertyId)"
 }
 
-internal inline fun <T> Observable<T>.mapToChange(obj: Any, propertyId: Int, crossinline func: (T) -> Unit): Observable<out Change> = map { value ->
+internal fun <T> Observable<T>.mapToChange(obj: Any, propertyId: Int, func: (T) -> Unit): Observable<out Change> = map { value ->
     object : AndroidChange(obj, propertyId) {
         override fun perform() {
             func.invoke(value)
