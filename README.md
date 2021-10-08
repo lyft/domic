@@ -1,3 +1,5 @@
+⚠️ This repository has been archived and is no longer accepting contributions ⚠️
+
 # Domic — Reactive Virtual DOM for Android
 
 Domic is an abstraction for Android UI layer that mirrors real Android [DOM][dom], but ***reactively***.
